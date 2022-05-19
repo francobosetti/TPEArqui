@@ -8,9 +8,13 @@ GLOBAL getDayOfMonth
 GLOBAL getMonth
 GLOBAL getYear
 
+GLOBAL prepareRegisters
+
 GLOBAL getGeneralRegisters
 GLOBAL getRIP
 GLOBAL getEFLAGS
+
+
 
 section .text
 	
@@ -84,37 +88,46 @@ getKey:
     pop rbp
     ret
 
-
-getGeneralRegisters:
+; retorna (creo) el byte en la posicion edi, que es el unico argumento de la función
+getByte:
     push rbp
     mov rbp, rsp
 
-    pushf
-    pop rax
+    mov rax, 0      ; no se si hace falta
+    mov al, [edi]
 
-    leave
+    mov rsp, rbp
+    pop rbp
+    ret
+
+;rax, rbx, rcx, rdx, rbp, rsi, rdi, rsp, r8,r9,r10,r11,r12,r13,r14,r15
+prepareRegisters:
+    ;mov [GPRv+x*8], rax
+
+    ;no armamos stackframe para preservar registros e imprimir en momento pedido
+    mov [GPRv], rax
+    mov [GPRv + 1 * 8], rbx
+    mov [GPRv + 2 * 8], rcx
+    mov [GPRv + 3 * 8], rdx
+    mov [GPRv + 4 * 8], rbp
+    mov [GPRv + 5 * 8], rsi
+    mov [GPRv + 6 * 8], rdi
+    mov [GPRv + 7 * 8], rsp
+    mov [GPRv + 8 * 8], r8
+    mov [GPRv + 9 * 8], r9
+    mov [GPRv + 10 * 8], r10
+    mov [GPRv + 11 * 8], r11
+    mov [GPRv + 12 * 8], r12
+    mov [GPRv + 13 * 8], r13
+    mov [GPRv + 14 * 8], r14
+    mov [GPRv + 15 * 8], r15
+
+    mov rax, GPRv
     ret
 
 
-getRIP:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, rip
-
-    leave
-    ret
-
-
-
-getEFLAGS:
-    push rbp
-    mov rbp, rsp
-
-    mov rax,
-
-    leave
-    ret
+section .bss
+    GPRv resq 16
 
 
 
