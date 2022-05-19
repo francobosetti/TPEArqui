@@ -24,6 +24,11 @@ typedef struct registers{
 } registers;
 
 
+
+
+
+
+
 int sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ver tema file descriptor
     if(buff == NULL)
         return 0;
@@ -66,6 +71,11 @@ void sys_time(clock * str){
 }
 
 void sys_registers(registers * regs){
+
+    regs->rip = getRIP();
+    //TODO DEVOLVER EAX EN ASM O SOLUCIONAR CASTEANDO ACA
+    regs->eflags = getEFLAGS();
+    regs->
 
 }
 

@@ -8,6 +8,10 @@ GLOBAL getDayOfMonth
 GLOBAL getMonth
 GLOBAL getYear
 
+GLOBAL getGeneralRegisters
+GLOBAL getRIP
+GLOBAL getEFLAGS
+
 section .text
 	
 cpuVendor:
@@ -79,4 +83,38 @@ getKey:
     mov rsp, rbp
     pop rbp
     ret
+
+
+getGeneralRegisters:
+    push rbp
+    mov rbp, rsp
+
+    pushf
+    pop rax
+
+    leave
+    ret
+
+
+getRIP:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, rip
+
+    leave
+    ret
+
+
+
+getEFLAGS:
+    push rbp
+    mov rbp, rsp
+
+    mov rax,
+
+    leave
+    ret
+
+
 
