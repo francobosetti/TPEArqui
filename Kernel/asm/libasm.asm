@@ -10,9 +10,7 @@ GLOBAL getYear
 
 GLOBAL prepareRegisters
 
-GLOBAL getGeneralRegisters
-GLOBAL getRIP
-GLOBAL getEFLAGS
+
 
 
 

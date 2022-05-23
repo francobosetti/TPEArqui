@@ -72,7 +72,7 @@ void sys_time(clock * str){
 void sys_registers(uint64_t regs[]){
     //array ordenado de la siguiente manera rax, rbx, rcx, rdx, rbp, rsi, rdi, rsp, r8,r9,r10,r11,r12,r13,r14,r15
     uint64_t *ptr;
-    
+
     ptr = prepareRegisters();
 
     for ( int i = 0 ; i < GPRSIZE ; i++){
@@ -101,7 +101,7 @@ void _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2
             sys_time((clock *) arg0);
             break;
         case SYS_MEM:  //arg0: uint8_t * mem, array de 32 lugares de 8bits, arg1: uint64_t address, direc para buscar
-            sys_mem((uint8_t *) arg0, (uint64_t) arg1);
+            sys_mem((uint8_t *) arg0, (uint64_t) arg1); //todo revisar el tema de que si va en userLand o en KS
             break;
         case SYS_REGISTERS: //arg0: registers * , struct donde va a guardar la info a devolver
             sys_registers((registers *) arg0);

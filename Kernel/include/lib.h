@@ -16,4 +16,6 @@ uint8_t getDayOfMonth();
 uint8_t getMonth();
 uint8_t getYear();
 
+uint64_t * prepareRegisters();
+
 #endif
