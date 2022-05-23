@@ -29,6 +29,7 @@ void ncPrintAtribbute(const char * string, int color, int backColor);
 void ncPrintCharAttribute(char character, int chColor, int backColor);
 void ncNewline();
 void ncClear();
+void ncScroll();
 
 void ncDeleteChar();
 void ncPrintDec(uint64_t value);

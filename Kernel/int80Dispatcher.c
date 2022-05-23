@@ -6,8 +6,9 @@
 
 #define SYS_READ 0
 #define SYS_WRITE 1
-#define SYS_MEM 68
-#define SYS_REGISTERS 69
+//#define SYS_MEM 68
+//#define SYS_REGISTERS 69
+#define SYS_CLEARSCREEN 69
 #define SYS_TIME 201
 
 #define GPRSIZE 16
@@ -15,18 +16,6 @@
 #define STDOUT 1
 #define STDERR 2
 #define CANT_GENERAL_REGISTERS 16
-
-//estructura para pasaje de registros
-
-
-
-
-
-
-
-
-
-
 
 int sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ver tema file descriptor
     if(buff == NULL)
@@ -69,6 +58,11 @@ void sys_time(clock * str){
     str->year = getYear();
 }
 
+void sys_clearscreen(){
+    ncClear();
+}
+
+/*
 void sys_registers(uint64_t regs[]){
     //array ordenado de la siguiente manera rax, rbx, rcx, rdx, rbp, rsi, rdi, rsp, r8,r9,r10,r11,r12,r13,r14,r15
     uint64_t *ptr;
@@ -89,6 +83,8 @@ void sys_mem(uint8_t * mem, uint64_t address){      // cargo en mem 32 bits a pa
     }
 }
 
+ */
+
 void _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2) {
     switch (code) {
         case SYS_READ: //arg0: fd , arg1: buff, arg2: length
@@ -100,11 +96,14 @@ void _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2
         case SYS_TIME: //arg0: clock * donde va a guardar la info
             sys_time((clock *) arg0);
             break;
-        case SYS_MEM:  //arg0: uint8_t * mem, array de 32 lugares de 8bits, arg1: uint64_t address, direc para buscar
+        case SYS_CLEARSCREEN:
+
+        /*case SYS_MEM:  //arg0: uint8_t * mem, array de 32 lugares de 8bits, arg1: uint64_t address, direc para buscar
             sys_mem((uint8_t *) arg0, (uint64_t) arg1); //todo revisar el tema de que si va en userLand o en KS
             break;
         case SYS_REGISTERS: //arg0: registers * , struct donde va a guardar la info a devolver
             sys_registers((registers *) arg0);
-            break;
+            break;*/
+
     }
 }
