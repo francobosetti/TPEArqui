@@ -17,6 +17,15 @@
 #define STDERR 2
 #define CANT_GENERAL_REGISTERS 16
 
+typedef struct clock{
+    uint8_t seconds;
+    uint8_t minutes;
+    uint8_t hours;
+    uint8_t dayOfMonth;
+    uint8_t month;
+    uint8_t year;
+}clock;
+
 int sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ver tema file descriptor
     if(buff == NULL)
         return 0;
@@ -97,6 +106,8 @@ void _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2
             sys_time((clock *) arg0);
             break;
         case SYS_CLEARSCREEN:
+            sys_clearscreen();
+            break;
 
         /*case SYS_MEM:  //arg0: uint8_t * mem, array de 32 lugares de 8bits, arg1: uint64_t address, direc para buscar
             sys_mem((uint8_t *) arg0, (uint64_t) arg1); //todo revisar el tema de que si va en userLand o en KS
