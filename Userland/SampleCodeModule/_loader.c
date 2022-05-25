@@ -23,6 +23,5 @@ void * memset(void * destiation, int32_t c, uint64_t length) {
 
 	while(length--)
 		dst[length] = chr;
-
 	return destiation;
 }

@@ -1,9 +1,9 @@
 
 
+#include <library.h>
 
-int main(){
-    while(1){
-        //TODO correr la consola
 
-    }
+int callShell(){
+    printk("hola soy un printf %d", 120);
+    return 0;
 }

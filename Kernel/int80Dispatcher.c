@@ -46,10 +46,8 @@ void sys_write(uint8_t fd, char * buff, uint64_t length){
 
     uint8_t color = White;
     //seteo color rojo en caso de que sea STDERR
-
     if (fd == STDERR)
         color = Red;
-
     for (int i = 0; i < length; ++i) {
         ncPrintCharAttribute(buff[i], color, Black);
     }

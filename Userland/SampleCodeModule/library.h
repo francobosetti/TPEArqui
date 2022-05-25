@@ -4,6 +4,9 @@
 
 #endif //SHELL_C_LIB_H
 
+#include <stdarg.h>
+#include <stdint.h>
+
 
 void printString(uint64_t fd, const uint8_t * vec);
 void putCharacter(uint64_t fd, uint8_t c);

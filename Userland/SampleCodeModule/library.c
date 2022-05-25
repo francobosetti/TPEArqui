@@ -1,7 +1,4 @@
-
-#include <stdarg.h>
-#include <stdint.h>
-
+#include <library.h>
 
 #define FALSE 0
 #define TRUE !FALSE

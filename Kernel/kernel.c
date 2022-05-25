@@ -5,6 +5,7 @@
 #include <naiveConsole.h>
 #include <keyboard.h>
 #include <idtLoader.h>
+#include <shell.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -122,7 +123,8 @@ int main()
 
     ncClear();
 
+	
+	callShell();
     while(1); //Porque sino no toma las interrupciones xq sino termina el main del kernel y no ejecuta nada mas
-
 	return 0;
 }
