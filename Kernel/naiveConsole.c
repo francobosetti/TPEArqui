@@ -28,7 +28,7 @@ void ncScroll(){
 
 }
 
-void ncPrintAtribbute(const char * string, int color, int backColor){
+void ncPrintAttribute(const char * string, int color, int backColor){
     int i;
 
     for (i = 0; string[i] != 0; i++)
@@ -40,11 +40,12 @@ void ncPrintCharAttribute(char character, int chColor, int backColor)
     *currentVideo = character;
     currentVideo++;
     *currentVideo = backColor<<4 | chColor;
-    currentVideo ++;
+    currentVideo++;
 }
 
 void ncPrintChar(char character)
 {
+
     if((currentVideo-video)>=(80*2*25)){
         ncScroll();
     }

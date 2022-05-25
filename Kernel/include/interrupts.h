@@ -19,9 +19,6 @@ void _irq05Handler(void);
 
 void _int80Handler(void);
 
-
-//void _int80Handler(uint64_t code, uint64_t arg0, uint64_t arg1 , uint64_t arg2);
-
 void _exception0Handler(void);
 void _exception6Handler(void);
 

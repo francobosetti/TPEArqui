@@ -10,10 +10,6 @@ GLOBAL getYear
 
 GLOBAL prepareRegisters
 
-
-
-
-
 section .text
 	
 cpuVendor:

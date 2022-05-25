@@ -1,6 +1,0 @@
-#ifndef SAMPLECODEMODULE_TIME_H
-#define SAMPLECODEMODULE_TIME_H
-
-
-void time();
-#endif //SAMPLECODEMODULE_TIME_H

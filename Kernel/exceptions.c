@@ -11,7 +11,7 @@ static void zeroDivision() {
 
     //TODO manejar corte de programa
     char * errMsg= "Error: Program tried to devide by zero. Stopping process.";
-    ncPrintAtribute(errMsg, Red, Black); //TODO Revisar como queremos hacer que imprima la salida de error
+    ncPrintAttribute(errMsg, Red, Black); //TODO Revisar como queremos hacer que imprima la salida de error
 
 	// Handler para manejar excepcíon
     //TODO aca poner la funcion que imprime los estados de registros
@@ -26,7 +26,7 @@ static void zeroDivision() {
 static void invalidOpcode() {
     //TODO manejar corte de programa
     char * errMsg= "Error: Invalid operation code. Stopping process.";
-    ncPrintAtribute(errMsg, Red, Black); //TODO Revisar como queremos hacer que imprima la salida de error
+    ncPrintAttribute(errMsg, Red, Black); //TODO Revisar como queremos hacer que imprima la salida de error
     // Handler para manejar excepcíon
 
     //TODO poner la funcion que imprime los estados de registros

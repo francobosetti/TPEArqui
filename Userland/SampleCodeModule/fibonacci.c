@@ -1,5 +1,5 @@
-#include "fibonacci.h"
-#include "lib.h"
+#include "include/fibonacci.h"
+#include "include/library.h"
 #include <stdint.h>
 
 #define FIBO0 0
@@ -24,4 +24,5 @@ void fibo(){
         nextTerm = t1 + t2;
         i++;
     }
+
 }

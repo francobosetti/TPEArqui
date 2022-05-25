@@ -38,7 +38,7 @@ void load_idt() {
 	picMasterMask(0xFC);
 	picSlaveMask(0xFF);
         
-	_sti(); //Reactico las interrupcioones una vez ya modificada la IDT
+	_sti(); //Reactivo las interrupcioones una vez ya modificada la IDT
 }
 
 static void setup_IDT_entry (int index, uint64_t offset) {

@@ -25,7 +25,7 @@ enum colorAttributes{Black = 0,
 
 void ncPrint(const char * string);
 void ncPrintChar(char character);
-void ncPrintAtribbute(const char * string, int color, int backColor);
+void ncPrintAttribute(const char * string, int color, int backColor);
 void ncPrintCharAttribute(char character, int chColor, int backColor);
 void ncNewline();
 void ncClear();

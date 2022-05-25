@@ -5,7 +5,6 @@
 #include <naiveConsole.h>
 #include <keyboard.h>
 #include <idtLoader.h>
-#include <shell.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -86,14 +85,13 @@ void * initializeKernelBinary()
 int main()
 {
     load_idt();
-
 	ncPrint("[Kernel Main]");
 	ncNewline();
 	ncPrint("  Sample code module at 0x");
 	ncPrintHex((uint64_t)sampleCodeModuleAddress);
 	ncNewline();
 	ncPrint("  Calling the sample code module returned: ");
-	ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
+	//ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
 	ncNewline();
 	ncNewline();
 
@@ -104,27 +102,12 @@ int main()
 	ncPrint((char*)sampleDataModuleAddress);
 	ncNewline();
 
-    //ncPrintAtribbute("  Arquitectura de Computadoras", Green, White);
-   // ncNewline();
-
-    ncPrint("  Hora: ");
-    ncPrintDec(getHourUTC());
-    ncNewline();
-
-    ncPrint("  Minutos: ");
-    ncPrintHex(getMins());
-    ncNewline();
-
-    ncPrint("  Segundos: ");
-    ncPrintHex(getSeconds());
-    ncNewline();
-
 	ncPrint("[Finished]");
 
-    ncClear();
+    //ncClear();
 
-	
-	callShell();
+    ((EntryPoint)sampleCodeModuleAddress)();
+
     while(1); //Porque sino no toma las interrupciones xq sino termina el main del kernel y no ejecuta nada mas
 	return 0;
 }

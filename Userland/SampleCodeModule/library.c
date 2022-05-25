@@ -1,9 +1,8 @@
-#include <library.h>
+#include "include/library.h"
+#include "include/sysCalls.h"
 
 #define FALSE 0
 #define TRUE !FALSE
-
-
 
 #define REGULAR 0
 #define ESCAPE 1
@@ -81,10 +80,6 @@ uint8_t* itoa(int value, uint8_t* buffer, int base)
     return reverse(buffer, 0, i - 1);
 }
 
-
-
-
-
 void putCharacter(uint64_t fd, uint8_t c){
     write(fd,&c,1);
 }
@@ -118,7 +113,8 @@ void vprintk(uint64_t fd,const uint8_t * fmt, va_list args){
                 //si estoy en regular y no es caracter especial, entonces lo imprimo
                 putCharacter(fd,*fmt);
             }
-        } else if ( state == ESCAPE) {
+            //si estoy en el otro estado
+        } else {
             switch (*fmt)
             {
                 case 'c':

@@ -1,4 +1,4 @@
-#include "lib.h"
+#include "include/library.h"
 
 void help(){
     char* helpMsg[]={ 

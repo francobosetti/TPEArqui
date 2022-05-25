@@ -17,27 +17,30 @@
 #define STDERR 2
 #define CANT_GENERAL_REGISTERS 16
 
-typedef struct clock{
-    uint8_t seconds;
-    uint8_t minutes;
-    uint8_t hours;
-    uint8_t dayOfMonth;
-    uint8_t month;
-    uint8_t year;
-}clock;
 
-int sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ver tema file descriptor
+extern uint16_t currentPos;
+
+
+void sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ver tema file descriptor
     if(buff == NULL)
-        return 0;
-
+        return;
     char * keyboardBuff = getBuffer();
+    /*
     int i=0;
 
     while(i < length && keyboardBuff[i] != '\n') {
             buff[i] = keyboardBuff[i];
             i++;
     }
-    return i; //returns quantity of bytes read
+     */
+    if(keyboardBuff[currentPos] == '\n')
+        currentPos = 0;
+    else if (currentPos < length) {
+        buff[currentPos] = keyboardBuff[currentPos];
+        currentPos++;
+    } else {
+
+    }
 }
 
 void sys_write(uint8_t fd, char * buff, uint64_t length){

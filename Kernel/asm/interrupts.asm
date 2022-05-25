@@ -14,6 +14,7 @@ GLOBAL _irq05Handler
 
 GLOBAL _exception0Handler
 GLOBAL _exception6Handler
+GLOBAL _int80Handler
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
@@ -70,8 +71,6 @@ SECTION .text
 	popState
 	iretq
 %endmacro
-
-
 
 %macro exceptionHandler 1
 	pushState
@@ -149,25 +148,26 @@ _exception6Handler:
 
 
 _int80Handler:
-    pushState ; conservo registros
+    pushstate
     push rbp
     mov rbp, rsp
 
-    mov r10, rdx
-    mov rdx, rsi
-    mov rsi, rdi
-    mov rdi, rax
+    push rdx
+    push rsi
+    push rdi
+    push rax
+
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
 
     call _int80Dispatcher
 
     mov rsp, rbp
     pop rbp
-    popState
-    ret
-
-
-
-
+    popstate
+    iretq
 
 haltcpu:
 	cli

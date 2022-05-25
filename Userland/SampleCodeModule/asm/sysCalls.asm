@@ -1,7 +1,4 @@
-
-
-GLOBAL writeChar
-
+GLOBAL write
 GLOBAL sysTime
 
 section .data
