@@ -4,8 +4,7 @@
 
 
 #endif //SAMPLECODEMODULE_TIME_H
-//todo revisar esto de ponerlas afuera, porq si las pongo adentro el time.c no me las detecta
-#define SYS_READ 0
-#define SYS_WRITE 1
-#define SYS_CLEARSCREEN 69
-#define SYS_TIME 201
+
+//la declaro tipo int: TODO ver despues que onda con que devuelve la syscall
+
+extern void writeChar(uint64_t fd, char *c);

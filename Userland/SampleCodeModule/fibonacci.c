@@ -1,4 +1,5 @@
 #include "fibonacci.h"
+#include "lib.h"
 #include <stdint.h>
 
 #define FIBO0 0
@@ -12,12 +13,12 @@ void fibo(){
     uint64_t nextTerm = t1 + t2;
 
     // print the first two terms t1 and t2
-    printf("Fibonacci Series:\nFibo(0) = %d\nFibo(1) = %d\n",t1,t2);
+    printk("Fibonacci Series:\nFibo(0) = %d\nFibo(1) = %d\n",t1,t2);
 
     // print 3rd to nth terms
     uint32_t i=2;
     while(1){
-        printf("Fibo(%d) = %d\n", i, nextTerm);
+        printk("Fibo(%d) = %d\n", i, nextTerm);
         t1 = t2;
         t2 = nextTerm;
         nextTerm = t1 + t2;

@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "time.h"
 #include "sysCalls.h"
+#include "lib.h"
 
 typedef struct clock{
     uint8_t seconds;
@@ -13,8 +14,7 @@ typedef struct clock{
 
 void time(){
     clock time;//todo revisar si esto deberia ser un puntero o no
-    sys_time(SYS_TIME, &time);
-    printf("La hora del sistema es: %d:%d:%d %d/%d/%d\n", time.hours, time.minutes, time.seconds, time.dayOfMonth, time.month, time.year);
-
+    sysTime(&time);
+    printk("La hora del sistema es: %d:%d:%d %d/%d/%d\n", time.hours, time.minutes, time.seconds, time.dayOfMonth, time.month, time.year);
 
 }

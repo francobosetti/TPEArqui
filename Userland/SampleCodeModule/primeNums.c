@@ -1,4 +1,5 @@
 #include "primeNums.h"
+#include "lib.h"
 #include <stdint.h>
 
 int isPrime(uint64_t number) {
@@ -10,14 +11,14 @@ int isPrime(uint64_t number) {
 }
 
 void primeNumbers(){
-    printf("Prime Numbers: \n");
+    printk("Prime Numbers: \n");
 
     /* Find all Prime numbers between 1 to end */
     uint64_t i = 2;
     while (1)
     {
         if(isPrime(i))
-            printf("%d, ", i);
+            printk("%d, ", i);
         i++;
     }
 }

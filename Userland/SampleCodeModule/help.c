@@ -1,4 +1,4 @@
-
+#include "lib.h"
 
 void help(){
     char* helpMsg[]={ 
@@ -11,10 +11,10 @@ void help(){
     "primos - Despliega en pantalla los numeros primos\n",
     "fibonacci - Despliega en pantalla los numeros de la sucesion de fibonacci\n",
     "| - El pipe se puede utilizar para poder correr dos funciones en simultaneo"};
-    printf("Las funciones disponibles para utilizar son:\n");
+    printk("Las funciones disponibles para utilizar son:\n");
     for (int i = 0; i < 9; i++)
     {
-         printf(helpMsg[i]);
+         printk(helpMsg[i]);
     }
     
    
