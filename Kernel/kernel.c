@@ -104,10 +104,14 @@ int main()
 
 	ncPrint("[Finished]");
 
-    //ncClear();
+    ncNewline();
+    ncNewline();
+    ncPrint("Press ENTER to enter SHELL");
 
+    while (getKey() != ENTER);
+
+    ncClear();
     ((EntryPoint)sampleCodeModuleAddress)();
 
-    while(1); //Porque sino no toma las interrupciones xq sino termina el main del kernel y no ejecuta nada mas
 	return 0;
 }

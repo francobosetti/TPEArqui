@@ -4,10 +4,24 @@
 #include <stdarg.h>
 #include <stdint.h>
 
+#define FALSE 0
+#define TRUE !FALSE
 
-void printString(uint64_t fd, const uint8_t * vec);
-void putCharacter(uint64_t fd, uint8_t c);
-void vprintk(uint64_t fd,const uint8_t * fmt, va_list args);
-void printk(const uint8_t * fmt, ...);
+#define NULL (void *) 0
+
+#define REGULAR 0
+#define ESCAPE 1
+#define STDOUT 1
+#define STDERR 2
+#define BUFFSIZE 128
+#define DECIMALBASE 10
+#define HEXABASE 16
+
+void printString(uint64_t fd, const char * vec);
+void putCharacter(uint64_t fd, char c);
+void vprintk(uint64_t fd,const char * fmt, va_list args);
+void printk(const char * fmt, ...);
+void printErr(const char * fmt, ...);
+int strcmp(const char * str1, const char * str2);
 
 #endif //SAMPLECODEMODULE_LIBRARY_H

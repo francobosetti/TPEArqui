@@ -1,33 +1,26 @@
-#include "include/library.h"
-#include "include/sysCalls.h"
+#include "library.h"
+#include "sysCalls.h"
 
-#define FALSE 0
-#define TRUE !FALSE
-
-#define REGULAR 0
-#define ESCAPE 1
-
-
-#define STDOUT 1
-#define STDERR 2
-#define BUFFSIZE 128
-
-#define DECIMALBASE 10
-#define HEXABASE 16
-
+int strcmp(const char * str1, const char * str2){
+   while(*str1 && (*str1 == *str2))
+    {
+        str1++;
+        str2++;
+    }
+    return *str1 - *str2;
+}
 
 int abs(int num){
     return num >= 0 ? num: -1 * num;
 }
 
-
 // Function to swap two numbers
-void swap(uint8_t *x, uint8_t *y) {
-    uint8_t t = *x; *x = *y; *y = t;
+void swap(char *x, char *y) {
+    char t = *x; *x = *y; *y = t;
 }
 
 // Function to reverse `buffer[i…j]`
-uint8_t* reverse(uint8_t *buffer, int i, int j)
+char* reverse(char *buffer, int i, int j)
 {
     while (i < j) {
         swap(&buffer[i++], &buffer[j--]);
@@ -37,7 +30,7 @@ uint8_t* reverse(uint8_t *buffer, int i, int j)
 }
 
 // Iterative function to implement `itoa()` function in C
-uint8_t* itoa(int value, uint8_t* buffer, int base)
+char* itoa(int value, char* buffer, int base)
 {
     // invalid input
     if (base < 2 || base > 32) {
@@ -80,29 +73,24 @@ uint8_t* itoa(int value, uint8_t* buffer, int base)
     return reverse(buffer, 0, i - 1);
 }
 
-void putCharacter(uint64_t fd, uint8_t c){
-    write(fd,&c,1);
+void putCharacter(uint64_t fd, char c){
+    sysWrite(fd,&c,1);
 }
 
-
-int getStringLength(const uint8_t *vec) {
+int getStringLength(const char *vec) {
     int i = 0;
     while ( vec[i] != 0)
         i++;
     return i;
 }
 
-
-void printString(uint64_t fd, const uint8_t * vec){
+void printString(uint64_t fd, const char * vec){
     int length = getStringLength(vec);
-    write(fd,vec,length);
+    sysWrite(fd,vec,length);
 }
 
-
-
-
-void vprintk(uint64_t fd,const uint8_t * fmt, va_list args){
-    uint8_t buffer[BUFFSIZE];
+void vprintk(uint64_t fd, const char * fmt, va_list args){
+    char buffer[BUFFSIZE];
     int state = REGULAR;
 
     while (*fmt) {
@@ -126,12 +114,12 @@ void vprintk(uint64_t fd,const uint8_t * fmt, va_list args){
                 case 'f':
                     break;
                 case 's':
-                    printString(fd,va_arg(args, const uint8_t *));
+                    printString(fd,va_arg(args, const char *));
                     break;
                 case 'x':
                 case 'p':
-                    putCharacter(STDOUT,'0');
-                    putCharacter(STDOUT,'X');
+                    putCharacter(fd,'0');
+                    putCharacter(fd,'X');
                     printString(fd, itoa( va_arg(args, uint64_t) ,buffer, HEXABASE));
                     break;
                 default:
@@ -143,10 +131,16 @@ void vprintk(uint64_t fd,const uint8_t * fmt, va_list args){
     }
 }
 
-
-void printk(const uint8_t * fmt, ...){
+void printk(const char * fmt, ...){
     va_list args;
     va_start(args,fmt);
     vprintk(STDOUT,fmt,args);
+    va_end(args);
+}
+
+void printErr(const char * fmt, ...){
+    va_list args;
+    va_start(args,fmt);
+    vprintk(STDERR,fmt,args);
     va_end(args);
 }

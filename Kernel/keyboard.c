@@ -1,12 +1,6 @@
 #include <lib.h>
 #include <naiveConsole.h>
-
-#define CANT_KEYS 128
-#define RELEASE 0x80
-#define ENTER 28
-#define LSHIFT 0x2A
-#define RSHIFT 0x36
-#define BACKSPACE 14
+#include "keyboard.h"
 
 #define MAX_BUFF 512
 

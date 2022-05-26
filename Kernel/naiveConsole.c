@@ -18,14 +18,20 @@ void ncPrint(const char * string)
 }
 
 void ncScroll(){
-    for (int i=0; i<80*24*2; i++){
-        video[i]=video[i*80*2];
+    for (int i=0; i<width*(height-1)*2; i++){
+        video[i]=video[i + (width*2)];
     }
-    for(int t=80*24*2; t<80*25*2; t+=2){
+    for(int t=width*(height-1)*2; t<(width*height*2); t+=2){
         video[t]=' ';
     }
-    currentVideo-=80*2;
+    currentVideo-=width*2;
 
+}
+
+void checkScroll(){
+    if((currentVideo-video) >= (width*2*height)){
+        ncScroll();
+    }
 }
 
 void ncPrintAttribute(const char * string, int color, int backColor){
@@ -37,6 +43,7 @@ void ncPrintAttribute(const char * string, int color, int backColor){
 
 void ncPrintCharAttribute(char character, int chColor, int backColor)
 {
+    checkScroll();
     *currentVideo = character;
     currentVideo++;
     *currentVideo = backColor<<4 | chColor;
@@ -46,9 +53,7 @@ void ncPrintCharAttribute(char character, int chColor, int backColor)
 void ncPrintChar(char character)
 {
 
-    if((currentVideo-video)>=(80*2*25)){
-        ncScroll();
-    }
+    checkScroll();
 	*currentVideo = character;
 	currentVideo += 2;
 }

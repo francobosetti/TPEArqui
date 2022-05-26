@@ -1,7 +1,11 @@
-#include "include/library.h"
+#include "library.h"
+#include "shell.h"
 
 int main() {
-    printk("hola soy un numero %d", 128);
-    printk("hola");
+
+    while (1){
+        printk("$ ");
+        stopForCommand();
+    }
     return 0;
 }
