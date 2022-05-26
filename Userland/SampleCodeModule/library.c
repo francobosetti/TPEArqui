@@ -7,7 +7,7 @@ int strcmp(const char * str1, const char * str2){
         str1++;
         str2++;
     }
-    return *str1 - *str2;
+    return *(const unsigned char *)str1 - *(const unsigned char *)str2;
 }
 
 int abs(int num){
@@ -143,4 +143,15 @@ void printErr(const char * fmt, ...){
     va_start(args,fmt);
     vprintk(STDERR,fmt,args);
     va_end(args);
+}
+
+
+char getChar(){
+    char c = 0;
+    uint16_t ret = 0;
+    do{
+        ret = sysRead(STDIN,&c,1);
+    } while (ret != 1);
+
+    return c;
 }

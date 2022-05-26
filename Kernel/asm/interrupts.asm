@@ -148,7 +148,7 @@ _exception6Handler:
 
 
 _int80Handler:
-    pushstate
+    pushState
     push rbp
     mov rbp, rsp
 
@@ -166,7 +166,7 @@ _int80Handler:
 
     mov rsp, rbp
     pop rbp
-    popstate
+    popState
     iretq
 
 haltcpu:

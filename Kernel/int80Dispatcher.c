@@ -13,47 +13,53 @@
 
 #define GPRSIZE 16
 
+#define STDIN 0
 #define STDOUT 1
 #define STDERR 2
 #define CANT_GENERAL_REGISTERS 16
 
+#define TRUE 1
+#define FALSE !TRUE
+
 
 extern uint16_t currentPos;
+static uint16_t currentCharToRead = 0;
 
+int sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ver tema file descriptor
+    if(buff == NULL || fd != STDIN || length <= 0 || currentPos == 0)
+        return -1;
 
-void sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ver tema file descriptor
-    if(buff == NULL)
-        return;
     char * keyboardBuff = getBuffer();
-    /*
-    int i=0;
 
-    while(i < length && keyboardBuff[i] != '\n') {
-            buff[i] = keyboardBuff[i];
-            i++;
+    int i = 0;
+    uint8_t readNewline = FALSE;
+    while(i < length && !readNewline) {
+            if(keyboardBuff[currentCharToRead] == '\n')
+                readNewline = TRUE;
+            buff[i++] = keyboardBuff[currentCharToRead++];
     }
-     */
-    if(keyboardBuff[currentPos] == '\n')
-        currentPos = 0;
-    else if (currentPos < length) {
-        buff[currentPos] = keyboardBuff[currentPos];
-        currentPos++;
-    } else {
 
+    if(keyboardBuff[currentCharToRead] == '\n'){
+        currentCharToRead=0;
     }
+
+    return i;
 }
 
-void sys_write(uint8_t fd, char * buff, uint64_t length){
+int sys_write(uint8_t fd, char * buff, uint64_t length){
     if(buff == NULL)
-        return;
+        return 0;
 
     uint8_t color = White;
     //seteo color rojo en caso de que sea STDERR
     if (fd == STDERR)
         color = Red;
-    for (int i = 0; i < length; ++i) {
+
+    int i;
+    for (i = 0; i < length; ++i) {
         ncPrintCharAttribute(buff[i], color, Black);
     }
+    return i;
 }
 
 void sys_time(clock * str){
@@ -95,14 +101,12 @@ void sys_mem(uint8_t * mem, uint64_t address){      // cargo en mem 32 bits a pa
 
  */
 
-void _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2) {
+int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2) {
     switch (code) {
         case SYS_READ: //arg0: fd , arg1: buff, arg2: length
-            sys_read( (uint8_t) arg0, (char *) arg1, (uint64_t) arg2);
-            break;
+            return sys_read( (uint8_t) arg0, (char *) arg1, (uint64_t) arg2);
         case SYS_WRITE: //arg0: fd , arg1: buff, arg2: length
-            sys_write( (uint8_t) arg0, (char *) arg1, (uint64_t) arg2);
-            break;
+            return sys_write( (uint8_t) arg0, (char *) arg1, (uint64_t) arg2);
         case SYS_TIME: //arg0: clock * donde va a guardar la info
             sys_time((clock *) arg0);
             break;
@@ -118,4 +122,5 @@ void _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2
             break;*/
 
     }
+    return 0;
 }

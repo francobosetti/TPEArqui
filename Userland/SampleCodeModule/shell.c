@@ -26,7 +26,7 @@ static command availableCommands[NUM_COMMANDS] = {{"help", &help},
                                    };
 
 void stopForCommand(){
-    char c = 0;
+    char c;
     char currentLine[MAX_LEN_COMMAND];
     int i = 0;
 
@@ -35,7 +35,7 @@ void stopForCommand(){
             putCharacter(STDOUT, c);
             currentLine[--i] = 0;
         }
-        else if(c != '\b'){
+        else if(c != '\b') {
             putCharacter(STDOUT, c);
             currentLine[i++] = c;
         }

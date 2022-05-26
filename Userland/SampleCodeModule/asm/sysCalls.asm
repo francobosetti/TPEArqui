@@ -16,6 +16,7 @@ section .data
 section .text
 
 ; uso esta syscall para imprimir caracter en pantalla, aparece con sys
+
 sysWrite:
     push rbp
     mov rbp, rsp
@@ -38,10 +39,10 @@ sysRead:
         ;en rdi tengo el fileDescriptor ya
         ;en rsi tengo el puntero al caracter
         ;en rdx tengo la longitud
-
     int 80h
     mov rsp, rbp
     pop rbp
+    
     ret
 
 sysTime:

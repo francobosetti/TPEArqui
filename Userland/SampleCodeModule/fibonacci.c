@@ -17,12 +17,11 @@ void fibo(){
 
     // print 3rd to nth terms
     uint32_t i=2;
-    while(1){
+    /*while(1){
         printk("Fibo(%d) = %d\n", i, nextTerm);
         t1 = t2;
         t2 = nextTerm;
         nextTerm = t1 + t2;
         i++;
-    }
-
+    }*/
 }

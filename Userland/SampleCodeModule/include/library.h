@@ -11,6 +11,7 @@
 
 #define REGULAR 0
 #define ESCAPE 1
+#define STDIN 0
 #define STDOUT 1
 #define STDERR 2
 #define BUFFSIZE 128
@@ -23,5 +24,6 @@ void vprintk(uint64_t fd,const char * fmt, va_list args);
 void printk(const char * fmt, ...);
 void printErr(const char * fmt, ...);
 int strcmp(const char * str1, const char * str2);
+char getChar();
 
 #endif //SAMPLECODEMODULE_LIBRARY_H
