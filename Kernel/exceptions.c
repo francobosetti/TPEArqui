@@ -35,12 +35,13 @@ void exceptionHandler(char * errMsg){
     //Seccion de frenado de Procesos
     ncPrintAttribute("Ingrese ENTER para poder continuar", Red, Black);
     int c;
+    /*
     do{
         _hlt();//hlt frena el CPU hasta que se detecte la proxima interrupcion externa
     }while((c=getChar()) != '\n');//TODO revisar de tener una funcion que haga lo del sys_read
     ncClear();
     //aca hay que volver a darle el control al usuario
-
+    */
 }
 
 void exceptionDispatcher(int exception) {

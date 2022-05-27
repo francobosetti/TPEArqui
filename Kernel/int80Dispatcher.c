@@ -34,9 +34,13 @@ int sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ver tema file de
     int i = 0;
     uint8_t readNewline = FALSE;
     while(i < length && !readNewline) {
-            if(keyboardBuff[currentCharToRead] == '\n')
+            if(keyboardBuff[currentCharToRead] == '\n'){
                 readNewline = TRUE;
-            buff[i++] = keyboardBuff[currentCharToRead++];
+                buff[i] = keyboardBuff[currentCharToRead]; 
+            } else {
+                buff[i] = keyboardBuff[currentCharToRead++];
+            }
+            i++;
     }
 
     if(keyboardBuff[currentCharToRead] == '\n'){

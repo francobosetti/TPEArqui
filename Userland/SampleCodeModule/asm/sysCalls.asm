@@ -40,6 +40,7 @@ sysRead:
         ;en rsi tengo el puntero al caracter
         ;en rdx tengo la longitud
     int 80h
+    ;tengo en rax, el valor de retorno de la interrupcion
     mov rsp, rbp
     pop rbp
     

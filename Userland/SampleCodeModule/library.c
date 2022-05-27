@@ -152,6 +152,6 @@ char getChar(){
     do{
         ret = sysRead(STDIN,&c,1);
     } while (ret != 1);
-
+    //TODO VER ESTA CONDICION DE CORTE, ME PARECE QUE ESTA MAL
     return c;
 }

@@ -163,10 +163,12 @@ _int80Handler:
     pop rcx
 
     call _int80Dispatcher
-
+	;tengo que devolver el valor de retorno, uso section .bss
+	mov [aux], rax
     mov rsp, rbp
     pop rbp
     popState
+	mov rax, [aux]
     iretq
 
 haltcpu:
