@@ -6,9 +6,10 @@
 
 #define SYS_READ 0
 #define SYS_WRITE 1
-//#define SYS_MEM 68
-//#define SYS_REGISTERS 69
 #define SYS_CLEARSCREEN 69
+//#define SYS_MEM 70
+//#define SYS_REGISTERS 71
+#define SYS_HASTICKED 72
 #define SYS_TIME 201
 
 #define GPRSIZE 16
@@ -24,6 +25,11 @@
 
 
 static uint16_t reader = 0;
+
+// Retrieved from https://stackoverflow.com/questions/28133020/how-to-convert-bcd-to-decimal
+static unsigned int bcdToDec(unsigned char time){
+    return (time >> 4) * 10 + (time & 0x0F);
+}
 
 int sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ver tema file descriptor
 
@@ -72,12 +78,26 @@ void sys_time(clock * str){
     if(str == NULL)
         return;
 
-    str->seconds = getSeconds();
-    str->minutes = getMins();
-    str->hours = getHour();
-    str->dayOfMonth = getDayOfMonth();
-    str->month = getMonth();
-    str->year = getYear();
+     str->seconds = bcdToDec(getSeconds());
+    str->minutes = bcdToDec(getMins());
+    uint8_t hrs=bcdToDec(getHour());
+    if(hrs<3)
+        hrs+=24;
+    hrs-=3;
+    str->hours = hrs;
+    str->dayOfMonth = bcdToDec(getDayOfMonth());
+    str->month = bcdToDec(getMonth());
+    str->year = bcdToDec(getYear());
+}
+
+int sys_hasTicked(){
+    static unsigned long last_tick = 0;
+    unsigned long current_tick = ticks_elapsed();
+    if(last_tick == current_tick){
+        return 0;
+    }
+    last_tick = current_tick;
+    return 1;
 }
 
 void sys_clearscreen(){
@@ -118,6 +138,9 @@ int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2)
             break;
         case SYS_CLEARSCREEN:
             sys_clearscreen();
+            break;
+        case SYS_HASTICKED:
+            return sys_hasTicked();
             break;
 
         /*case SYS_MEM:  //arg0: uint8_t * mem, array de 32 lugares de 8bits, arg1: uint64_t address, direc para buscar

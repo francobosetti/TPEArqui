@@ -4,6 +4,7 @@ GLOBAL sysTime
 GLOBAL sysClearScreen
 GLOBAL sysPrintMem
 GLOBAL sysInfoReg
+GLOBAL sysHasTicked
 
 section .data
     SYSREAD equ 0
@@ -11,6 +12,7 @@ section .data
     SYSCLEARSCREEN equ 69
     SYSPRINTMEM equ 70
     SYSINFOREG equ 71
+    SYSHASTICKED equ 72
     SYSTIME equ 201
 
 section .text
@@ -88,3 +90,13 @@ sysClearScreen:
       mov rsp, rbp
       pop rbp
       ret
+
+sysHasTicked:
+    push rbp
+    mov rbp, rsp
+    mov rax, SYSHASTICKED
+
+    int 80h
+    mov rsp, rbp
+    pop rbp
+    ret

@@ -4,9 +4,10 @@
 #include "help.h"
 #include "fibonacci.h"
 #include "primeNums.h"
+#include "exceptionTester.h"
 
 #define MAX_LEN_COMMAND 128
-#define NUM_COMMANDS 4
+#define NUM_COMMANDS 6
 
 typedef void (*commandPointer)(void);
 
@@ -16,8 +17,8 @@ typedef struct{
 }command;
 
 static command availableCommands[NUM_COMMANDS] = {{"help", &help},
-                                   //{&divideByZero, "dividezero"},
-                                   //{&invalidOp, "invalidop"},
+                                   { "divZero", &divideZero},
+                                   { "invalidOpCode", &invalidOpCode},
                                    //{&infoReg, "inforeg"},
                                    //{&printMem, "printmem"},
                                    {"time", &time},

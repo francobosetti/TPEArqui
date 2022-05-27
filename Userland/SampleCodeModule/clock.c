@@ -4,8 +4,8 @@
 #include "include/library.h"
 
 void time(){
-    clock time;//todo revisar si esto deberia ser un puntero o no
+    clock time;
     sysTime(&time);
-    printk("La hora del sistema es: %d:%d:%d %d/%d/%d\n", time.hours, time.minutes, time.seconds, time.dayOfMonth, time.month, time.year);
+    printk("La hora y dia del sistema es: %d:%d:%d del %d/%d/%d \n", time.hours, time.minutes, time.seconds, time.dayOfMonth, time.month, time.year);
 
 }

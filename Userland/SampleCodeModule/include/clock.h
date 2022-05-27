@@ -7,7 +7,7 @@ typedef struct clock{
     uint8_t hours;
     uint8_t dayOfMonth;
     uint8_t month;
-    uint8_t year;
+    uint16_t year;
 }clock;
 
 void time();
