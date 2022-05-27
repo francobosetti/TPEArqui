@@ -40,6 +40,7 @@ void stopForCommand(){
             currentLine[i++] = c;
         }
     }
+    printk("\n");
     currentLine[i] = 0;
 
     if(!execute(currentLine)){

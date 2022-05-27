@@ -8,6 +8,9 @@
 
 typedef void (*Exception)(void);
 
+static void zeroDivision();
+static void invalidOpcode();
+
 char* regNameArr[]={"rax: ", "rbx: ", "rcx: ", "rdx: ", "rbp: ", "rsi: ", "rdi: ", "rsp: ", "r8: ","r9: ","r10: ","r11: ","r12: ","r13: ","r14: ","r15: "};
 
 static Exception exceptions[]={&zeroDivision, 0, 0, 0, 0, 0, &invalidOpcode};

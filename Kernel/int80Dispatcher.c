@@ -17,37 +17,34 @@
 #define STDOUT 1
 #define STDERR 2
 #define CANT_GENERAL_REGISTERS 16
+#define MAX_BUFF 512
 
 #define TRUE 1
 #define FALSE !TRUE
 
 
-extern uint16_t currentPos;
-static uint16_t currentCharToRead = 0;
+static uint16_t reader = 0;
 
 int sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ver tema file descriptor
-    if(buff == NULL || fd != STDIN || length <= 0 || currentPos == 0)
+
+    int writer;
+
+    int i;
+    char * kbdbuffer = getBuffer(&writer);
+
+    
+    if ( reader == writer)
         return -1;
 
-    char * keyboardBuff = getBuffer();
-
-    int i = 0;
-    uint8_t readNewline = FALSE;
-    while(i < length && !readNewline) {
-            if(keyboardBuff[currentCharToRead] == '\n'){
-                readNewline = TRUE;
-                buff[i] = keyboardBuff[currentCharToRead]; 
-            } else {
-                buff[i] = keyboardBuff[currentCharToRead++];
-            }
-            i++;
+    int addedNewLine = FALSE;
+    //corto cuando me paso la length o con newline
+    for ( i = 0; i < length && !addedNewLine; i++, reader = ( reader + 1) % MAX_BUFF ){
+        buff[i] = kbdbuffer[reader];
+        if ( kbdbuffer[reader] == '\n')
+            addedNewLine = TRUE;
     }
-
-    if(keyboardBuff[currentCharToRead] == '\n'){
-        currentCharToRead=0;
-    }
-
     return i;
+    //salgo porque lei el newline
 }
 
 int sys_write(uint8_t fd, char * buff, uint64_t length){
@@ -61,7 +58,12 @@ int sys_write(uint8_t fd, char * buff, uint64_t length){
 
     int i;
     for (i = 0; i < length; ++i) {
-        ncPrintCharAttribute(buff[i], color, Black);
+        if ( buff[i] == '\n')
+            ncNewline();
+        else if ( buff[i] == '\b')
+            ncDeleteChar();
+        else 
+            ncPrintCharAttribute(buff[i], color, Black);
     }
     return i;
 }

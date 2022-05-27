@@ -77,7 +77,7 @@ static char shift_kbd_US [CANT_KEYS] =
         };
 
 char keyboardBuffer[MAX_BUFF];
-uint16_t currentPos = 0;
+uint16_t writer = 0;
 
 void ncPrintKey(uint16_t code){
     if(code < CANT_KEYS) {
@@ -98,33 +98,33 @@ void ncPrintKeyShift(uint16_t code){
 static uint8_t shiftFlag = 0;
 void keyboard_handler(){
     uint16_t teclahex = getKey();
-
     if(teclahex == RSHIFT || teclahex == LSHIFT)
         shiftFlag = 1;
     else if(teclahex == (RSHIFT + RELEASE) || teclahex == (LSHIFT + RELEASE)) //Ambos release shifts del teclado
         shiftFlag = 0;
     else if(teclahex == ENTER){
-        ncNewline();
-        currentPos = 0;
+        //ncNewline();
+        keyboardBuffer[writer++] = '\n';
     }
     else if(teclahex == BACKSPACE){ //TODO:Chequear si borra mas alla de la linea del shell
-        if(currentPos>0){
-            ncDeleteChar();
-            currentPos--;
-        }
+        keyboardBuffer[writer++] = '\b';
+    } else if ( teclahex < RELEASE) {
+         if (shiftFlag == 0) {
+            //ncPrintKey(teclahex);
+            keyboardBuffer[writer++] = kbd_US[teclahex];
+        } else {
+                //ncPrintKeyShift(teclahex);
+                keyboardBuffer[writer++] = shift_kbd_US[teclahex];
+            }
     }
-    else if(shiftFlag == 0){
-        ncPrintKey(teclahex);
-        keyboardBuffer[currentPos++] = kbd_US[teclahex];
-    }
-    else{
-        ncPrintKeyShift(teclahex);
-        keyboardBuffer[currentPos++] = shift_kbd_US[teclahex];
-    }
+    writer %= MAX_BUFF;
 }
 
-char * getBuffer(){
+char * getBuffer(int * writerVal){
+    *writerVal = writer;
     return keyboardBuffer;
 }
+
+
 
 
