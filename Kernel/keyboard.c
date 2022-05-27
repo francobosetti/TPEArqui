@@ -1,8 +1,11 @@
 #include <lib.h>
 #include <naiveConsole.h>
 #include "keyboard.h"
+#include "int80Dispatcher.h"
 
 #define MAX_BUFF 512
+
+#define STDIN 0
 
 //Tabla para convertir lo que recibe getKey en letra
 static char kbd_US [CANT_KEYS] =
@@ -103,17 +106,14 @@ void keyboard_handler(){
     else if(teclahex == (RSHIFT + RELEASE) || teclahex == (LSHIFT + RELEASE)) //Ambos release shifts del teclado
         shiftFlag = 0;
     else if(teclahex == ENTER){
-        //ncNewline();
         keyboardBuffer[writer++] = '\n';
     }
     else if(teclahex == BACKSPACE){ //TODO:Chequear si borra mas alla de la linea del shell
         keyboardBuffer[writer++] = '\b';
     } else if ( teclahex < RELEASE) {
          if (shiftFlag == 0) {
-            //ncPrintKey(teclahex);
             keyboardBuffer[writer++] = kbd_US[teclahex];
         } else {
-                //ncPrintKeyShift(teclahex);
                 keyboardBuffer[writer++] = shift_kbd_US[teclahex];
             }
     }
@@ -124,6 +124,19 @@ char * getBuffer(int * writerVal){
     *writerVal = writer;
     return keyboardBuffer;
 }
+
+
+
+char getCharKernel(){
+    char c;
+    int rta;
+    do {
+        rta = sys_read(STDIN,&c, 1);
+    } while ( rta != 1 );
+    
+    return c;
+}
+
 
 
 

@@ -2,11 +2,16 @@
 #include "stdint.h"
 #include "lib.h"
 #include "interrupts.h"
+#include "keyboard.h"
 
 #define ZERO_EXCEPTION_ID 0
 #define INVALID_OPCODE 6
 
 typedef void (*Exception)(void);
+
+static void * const sampleCodeModuleAddress = (void*)0x400000;
+
+typedef int (*EntryPoint)();
 
 static void zeroDivision();
 static void invalidOpcode();
@@ -33,18 +38,20 @@ void exceptionHandler(char * errMsg){
     for (int i = 0; i < 16; ++i) {
         ncPrint(regNameArr[i]);
         ncPrintHex(regArr[i]);
+        ncNewline();
     }
     ncNewline();
     //Seccion de frenado de Procesos
     ncPrintAttribute("Ingrese ENTER para poder continuar", Red, Black);
     int c;
-    /*
+    
     do{
         _hlt();//hlt frena el CPU hasta que se detecte la proxima interrupcion externa
-    }while((c=getChar()) != '\n');//TODO revisar de tener una funcion que haga lo del sys_read
+    }while((c=getCharKernel()) != '\n');
     ncClear();
+    ((EntryPoint)sampleCodeModuleAddress)();//TODO revisar esto
     //aca hay que volver a darle el control al usuario
-    */
+    
 }
 
 void exceptionDispatcher(int exception) {

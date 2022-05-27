@@ -26,7 +26,11 @@ static command availableCommands[NUM_COMMANDS] = {{"help", &help},
                                    {"fibonacci", &fibo},
                                    };
 
+
+
 void stopForCommand(){
+
+
     char c;
     char currentLine[MAX_LEN_COMMAND];
     int i = 0;
@@ -43,11 +47,11 @@ void stopForCommand(){
     }
     printk("\n");
     currentLine[i] = 0;
-
     if(!execute(currentLine)){
         printErr(currentLine);
         printErr(" : comando no encontrado\n");
     }
+    printk("\n");
 }
 
 int execute(char * command){

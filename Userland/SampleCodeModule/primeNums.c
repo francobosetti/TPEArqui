@@ -18,7 +18,7 @@ void primeNumbers(){
     while (1)
     {
         if(isPrime(i))
-            printk("%d, ", i);
+            printk("%d\n", i);
         i++;
     }
 }
