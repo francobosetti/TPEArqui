@@ -7,7 +7,7 @@
 #define SYS_READ 0
 #define SYS_WRITE 1
 #define SYS_CLEARSCREEN 69
-//#define SYS_MEM 70
+#define SYS_MEM 70
 //#define SYS_REGISTERS 71
 #define SYS_HASTICKED 72
 #define SYS_TIME 201
@@ -103,7 +103,6 @@ int sys_hasTicked(){
 void sys_clearscreen(){
     ncClear();
 }
-
 /*
 void sys_registers(uint64_t regs[]){
     //array ordenado de la siguiente manera rax, rbx, rcx, rdx, rbp, rsi, rdi, rsp, r8,r9,r10,r11,r12,r13,r14,r15
@@ -117,15 +116,15 @@ void sys_registers(uint64_t regs[]){
     }
 
 }
+*/
 
-void sys_mem(uint8_t * mem, uint64_t address){      // cargo en mem 32 bits a partir de address
+void sys_mem(uint8_t * mem, uint64_t address){      
+    // cargo en el array mem 32 bytes a partir de address
     for (int i = 0; i < 32; i++) {
         mem[i] = getByte(address);
         address+=8;
     }
 }
-
- */
 
 int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2) {
     switch (code) {
@@ -143,9 +142,10 @@ int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2)
             return sys_hasTicked();
             break;
 
-        /*case SYS_MEM:  //arg0: uint8_t * mem, array de 32 lugares de 8bits, arg1: uint64_t address, direc para buscar
+        case SYS_MEM:  //arg0: uint8_t * mem, array de 32 lugares de 8bits, arg1: uint64_t address, direc para buscar
             sys_mem((uint8_t *) arg0, (uint64_t) arg1); //todo revisar el tema de que si va en userLand o en KS
             break;
+            /*
         case SYS_REGISTERS: //arg0: registers * , struct donde va a guardar la info a devolver
             sys_registers((registers *) arg0);
             break;*/

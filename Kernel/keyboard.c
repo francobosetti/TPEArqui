@@ -105,12 +105,7 @@ void keyboard_handler(){
         shiftFlag = 1;
     else if(teclahex == (RSHIFT + RELEASE) || teclahex == (LSHIFT + RELEASE)) //Ambos release shifts del teclado
         shiftFlag = 0;
-    else if(teclahex == ENTER){
-        keyboardBuffer[writer++] = '\n';
-    }
-    else if(teclahex == BACKSPACE){ //TODO:Chequear si borra mas alla de la linea del shell
-        keyboardBuffer[writer++] = '\b';
-    } else if ( teclahex < RELEASE) {
+    else if ( teclahex < RELEASE) {
          if (shiftFlag == 0) {
             keyboardBuffer[writer++] = kbd_US[teclahex];
         } else {
@@ -119,13 +114,12 @@ void keyboard_handler(){
     }
     writer %= MAX_BUFF;
 }
+  
 
 char * getBuffer(int * writerVal){
     *writerVal = writer;
     return keyboardBuffer;
 }
-
-
 
 char getCharKernel(){
     char c;

@@ -6,14 +6,14 @@
 static int firstEntry = TRUE;
 
 int main() {
-
     //esta va a ser mi shell
     //consumo hasta el newline
-    printk("ranita OS shell\n");
 
+    printk("ranita OS shell\n");
 
     while ( firstEntry && getChar() != '\n')
         ;
+
     firstEntry = FALSE;
 
     while (1){
@@ -23,5 +23,3 @@ int main() {
 
     return 0;
 }
-
-
