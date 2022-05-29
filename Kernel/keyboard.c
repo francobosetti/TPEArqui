@@ -127,7 +127,6 @@ char getCharKernel(){
     do {
         rta = sys_read(STDIN,&c, 1);
     } while ( rta != 1 );
-    
     return c;
 }
 

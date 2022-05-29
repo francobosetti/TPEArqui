@@ -78,7 +78,13 @@ void stopForCommand(){
     //probaciones
     char strings[AUXVECTORLENGTH][MAX_LEN_COMMAND];
     int stringsDim = parseString(currentLine , strings);
+    if(stringsDim==1){
+        //execute para funciones que no reciban args
+    }else if(stringsDim==2){
+        //execute para funciones con un arg
+    }else{
 
+    }
 
     
     if(!execute(currentLine)){
