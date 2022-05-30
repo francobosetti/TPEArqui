@@ -18,4 +18,6 @@ uint8_t getYear();
 
 uint64_t * prepareRegisters();
 
+uint8_t getByte(uint64_t address);
+
 #endif

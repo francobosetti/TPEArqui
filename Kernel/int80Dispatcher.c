@@ -3,6 +3,7 @@
 #include "keyboard.h"
 #include "lib.h"
 #include "time.h"
+#include "scheduler.h"
 
 #define SYS_READ 0
 #define SYS_WRITE 1
@@ -10,6 +11,7 @@
 #define SYS_MEM 70
 //#define SYS_REGISTERS 71
 #define SYS_HASTICKED 72
+#define SYS_TASK 73
 #define SYS_TIME 201
 
 #define GPRSIZE 16
@@ -128,8 +130,7 @@ void sys_mem(uint8_t * mem, uint64_t address){
 }
 
 void sys_task(commandPointer function){
-    //TODO
-    return;
+    addTask(function);
 }
 
 int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2) {
@@ -150,6 +151,10 @@ int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2)
         case SYS_MEM:  //arg0: uint8_t * mem, array de 32 lugares de 8bits, arg1: uint64_t address, direc para buscar
             sys_mem((uint8_t *) arg0, (uint64_t) arg1); //todo revisar el tema de que si va en userLand o en KS
             break;
+        case SYS_TASK:
+            sys_task((commandPointer) arg0);
+            break;
+
             /*
         case SYS_REGISTERS: //arg0: registers * , struct donde va a guardar la info a devolver
             sys_registers((registers *) arg0);

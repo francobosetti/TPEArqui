@@ -1,22 +1,12 @@
-#include <stdint.h>
+#include "scheduler.h"
 #include "keyboard.h"
-
-#define NULL (void *) 0
-#define MAX_TASKS 2
-
-#define STOP_FIRST 1
-#define STOP_SECOND 2
-
-#define EXIT_KEY 28 //ASCII para la tecla de ESC
-
-typedef void (*commandPointer)(void);
 
 static commandPointer tasks[MAX_TASKS];
 static uint8_t cantTasks = 0;
 static uint8_t currentTask = 0;
 
 void addTask(commandPointer function){
-    if(cantTaks >= MAX_TASKS)
+    if(cantTasks >= MAX_TASKS)
         return;
     tasks[cantTasks++] = function;
 }
@@ -28,7 +18,7 @@ void removeTask(uint8_t task){
 }
 
 void removeCurrentTask(){
-    if(cantTaks == 0)
+    if(cantTasks == 0)
         return;
     tasks[currentTask] = NULL;
     cantTasks--;
@@ -41,7 +31,7 @@ void runCurrentTask(){
 
 void runTasks(){
     uint8_t exit = 0, c;
-    while ((c = getCharKernel()) != ESC){
+    while ((c = getCharKernel()) != EXIT_KEY){
 
         if(c == STOP_FIRST)
             removeTask(STOP_FIRST);

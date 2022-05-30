@@ -9,6 +9,7 @@ GLOBAL getMonth
 GLOBAL getYear
 
 GLOBAL prepareRegisters
+GLOBAL getByte
 
 section .text
 	
