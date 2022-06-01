@@ -27,7 +27,13 @@ void ncPrint(const char * string);
 void ncPrintChar(char character);
 void ncPrintAttribute(const char * string, int color, int backColor);
 void ncPrintCharAttribute(char character, int chColor, int backColor);
+void ncPrintCharRightAttribute(char character, int chColor, int backColor);
+void ncPrintCharLeftAttribute(char character, int chColor, int backColor);
+void ncPrintCharBothAttribute(char character, int chColor, int backColor);
 void ncNewline();
+void ncNewlineLeft();
+void ncNewlineRight();
+void ncNewlineBoth();
 void ncClear();
 void ncScroll();
 

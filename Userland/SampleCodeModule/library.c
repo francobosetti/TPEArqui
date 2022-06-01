@@ -1,6 +1,8 @@
 #include "library.h"
 #include "sysCalls.h"
 
+
+
 int strcmp(const char * str1, const char * str2){
    while(*str1 && (*str1 == *str2))
     {
@@ -131,10 +133,19 @@ void vprintk(uint64_t fd, const char * fmt, va_list args){
     }
 }
 
+
+//version 'adaptada' de printf, se le debe pasar un fileDescriptor
 void printk(const char * fmt, ...){
     va_list args;
     va_start(args,fmt);
     vprintk(STDOUT,fmt,args);
+    va_end(args);
+}
+
+void printkfd(int fd, const char * fmt, ...){
+    va_list args;
+    va_start(args,fmt);
+    vprintk(fd,fmt,args);
     va_end(args);
 }
 

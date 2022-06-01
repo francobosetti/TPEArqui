@@ -2,5 +2,6 @@
 #define SAMPLECODEMODULE_FIBONACCI_H
 
 void fibo();
+void nextFibo(uint8_t fd);
 
 #endif //SAMPLECODEMODULE_FIBONACCI_H

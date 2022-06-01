@@ -3,17 +3,21 @@
 
 #include <stdint.h>
 
-#define NULL (void *) 0
-#define MAX_TASKS 2
+#define TRUE 1
+#define FALSE !TRUE
 
-#define STOP_FIRST 1
-#define STOP_SECOND 2
+#define STDIN 0
+#define STDOUT 1
+#define STDERR 2
+#define STDDER 3
+#define STDIZQ 4
+#define STDBOTH 5
 
 #define EXIT_KEY 28 //ASCII para la tecla de ESC
 
-typedef void (*commandPointer)(void);
+typedef void (*taskPointer)(uint8_t fd);
 
-void addTask(commandPointer function);
+void addTask(taskPointer function);
 void removeTask(uint8_t task);
 void removeCurrentTask();
 void runCurrentTask();

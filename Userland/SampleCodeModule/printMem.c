@@ -1,5 +1,6 @@
-#include "include/printMem.h"
-#include "include/library.h"
+#include "printMem.h"
+#include "library.h"
+#include "sysCalls.h"
 #include <stdint.h>
 
 
@@ -9,7 +10,7 @@ void printMem(char* str){
     //chequeo si address cumple con 0x12345678h (0x[0-9a-f]{8}h)??
     if ( len<3 || len >11 || str[0]!='0' || str[1]!='x'){
         printk("dirección invalida");
-        return 1;
+        return;
     }
     //transformo el string en hexa a un int para pasarselo a sys_mem
     for(int i=2; i<len; i++){
@@ -19,7 +20,7 @@ void printMem(char* str){
 			address = 16*address + str[i]-'a';
 		else{
             printk("dirección invalida");
-            return 1;
+            return;
         }
 	}
     char* mem;

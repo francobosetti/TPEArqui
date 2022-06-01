@@ -5,5 +5,6 @@
 
 int isPrime(uint64_t number);
 void primeNumbers();
+void nextPrime(uint8_t fd);
 
 #endif //SAMPLECODEMODULE_PRIMENUMS_H

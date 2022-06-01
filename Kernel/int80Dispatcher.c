@@ -12,6 +12,7 @@
 //#define SYS_REGISTERS 71
 #define SYS_HASTICKED 72
 #define SYS_TASK 73
+#define SYS_RUNTASKS 74
 #define SYS_TIME 201
 
 #define GPRSIZE 16
@@ -19,6 +20,8 @@
 #define STDIN 0
 #define STDOUT 1
 #define STDERR 2
+#define STDDER 3
+#define STDIZQ 4
 #define CANT_GENERAL_REGISTERS 16
 #define MAX_BUFF 512
 
@@ -67,12 +70,39 @@ int sys_write(uint8_t fd, char * buff, uint64_t length){
 
     int i;
     for (i = 0; i < length; ++i) {
-        if ( buff[i] == '\n')
-            ncNewline();
+        if ( buff[i] == '\n'){
+            switch (fd) {
+                case STDDER:
+                    ncNewlineRight();
+                    break;
+                case STDIZQ:
+                    ncNewlineLeft();
+                    break;
+                case STDBOTH:
+                    ncNewlineBoth();
+                    break;
+                default:
+                    ncNewline();
+            }
+        }
         else if ( buff[i] == '\b')
             ncDeleteChar();
-        else 
-            ncPrintCharAttribute(buff[i], color, Black);
+        else{
+            switch (fd) {
+                case STDDER:
+                    ncPrintCharRightAttribute(buff[i], color, Black);
+                    break;
+                case STDIZQ:
+                    ncPrintCharLeftAttribute(buff[i], color, Black);
+                    break;
+                case STDBOTH:
+                    ncPrintCharBothAttribute(buff[i], color, Black);
+                    break;
+                default:
+                    ncPrintCharAttribute(buff[i], color, Black);
+            }
+        }
+
     }
     return i;
 }
@@ -81,7 +111,7 @@ void sys_time(clock * str){
     if(str == NULL)
         return;
 
-     str->seconds = bcdToDec(getSeconds());
+    str->seconds = bcdToDec(getSeconds());
     str->minutes = bcdToDec(getMins());
     uint8_t hrs=bcdToDec(getHour());
     if(hrs<3)
@@ -106,6 +136,7 @@ int sys_hasTicked(){
 void sys_clearscreen(){
     ncClear();
 }
+
 /*
 void sys_registers(uint64_t regs[]){
     //array ordenado de la siguiente manera rax, rbx, rcx, rdx, rbp, rsi, rdi, rsp, r8,r9,r10,r11,r12,r13,r14,r15
@@ -133,6 +164,10 @@ void sys_task(commandPointer function){
     addTask(function);
 }
 
+void sys_runTasks(){
+    runTasks();
+}
+
 int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2) {
     switch (code) {
         case SYS_READ: //arg0: fd , arg1: buff, arg2: length
@@ -153,6 +188,9 @@ int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2)
             break;
         case SYS_TASK:
             sys_task((commandPointer) arg0);
+            break;
+        case SYS_RUNTASKS:
+            sys_runTasks();
             break;
 
             /*

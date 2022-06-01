@@ -12,21 +12,20 @@
 //defino una memoria auxiliar para mi vector de strings
 #define AUXVECTORLENGTH 20
 
-typedef void (*commandPointer)(void);
-
 typedef struct{
     char * name;
+    parallelPointer parallelismFunction;
     commandPointer function;
 }command;
 
-static command availableCommands[NUM_COMMANDS] = {{"help", &help},
-                                   { "divZero", &divideZero},
-                                   { "invalidOpCode", &invalidOpCode},
-                                   {"inforeg", &infoReg},
-                                   {"printmem", &printMem},
-                                   {"time", &time},
-                                   {"primos", &primeNumbers},
-                                   {"fibonacci", &fibo},
+static command availableCommands[NUM_COMMANDS] = {{"help", NULL, &help},
+                                   { "divZero", NULL, &divideZero},
+                                   { "invalidOpCode", NULL, &invalidOpCode},
+                                   //{"inforeg", &infoReg},
+                                   //{"printmem", &printMem},
+                                   {"time", NULL, &time},
+                                   {"primos", &nextPrime, &primeNumbers},
+                                   {"fibonacci", &nextFibo, &fibo},
                                    };
 
 
