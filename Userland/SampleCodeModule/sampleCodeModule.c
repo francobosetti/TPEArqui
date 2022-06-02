@@ -9,7 +9,7 @@ int main() {
     //esta va a ser mi shell
     //consumo hasta el newline
 
-    printk("ranita OS shell\n");
+    printk("Lettuce OS shell\n");
 
     while ( firstEntry && getChar() != '\n')
         ;

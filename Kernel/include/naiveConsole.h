@@ -24,23 +24,36 @@ enum colorAttributes{Black = 0,
     };
 
 void ncPrint(const char * string);
-void ncPrintChar(char character);
+void ncPrintRight(const char * string);
+void ncPrintLeft(const char * string);
+
+
 void ncPrintAttribute(const char * string, int color, int backColor);
+void ncPrintLeftAttribute(const char * string, int chColor, int backColor);
+void ncPrintRightAttribute(const char * string, int chColor, int backColor);
+
+void ncPrintChar(char character);
 void ncPrintCharAttribute(char character, int chColor, int backColor);
 void ncPrintCharRightAttribute(char character, int chColor, int backColor);
 void ncPrintCharLeftAttribute(char character, int chColor, int backColor);
 void ncPrintCharBothAttribute(char character, int chColor, int backColor);
+
 void ncNewline();
 void ncNewlineLeft();
 void ncNewlineRight();
 void ncNewlineBoth();
+
 void ncClear();
 void ncScroll();
 
 void ncDeleteChar();
 void ncPrintDec(uint64_t value);
 void ncPrintHex(uint64_t value);
+void ncPrintHexLeft(uint64_t value);
+void ncPrintHexRight(uint64_t value);
 void ncPrintBin(uint64_t value);
 void ncPrintBase(uint64_t value, uint32_t base);
+void ncPrintBaseLeft(uint64_t value, uint32_t base);
+void ncPrintBaseRight(uint64_t value, uint32_t base);
 
 #endif

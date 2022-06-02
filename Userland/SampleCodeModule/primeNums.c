@@ -25,3 +25,7 @@ void primeNumbers(){
     while (1)
         nextPrime(STDOUT);
 }
+
+void restartPrimes(){
+    current=2;
+}

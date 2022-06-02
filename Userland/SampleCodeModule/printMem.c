@@ -4,12 +4,12 @@
 #include <stdint.h>
 
 
-void printMem(char* str){
+void printMem( char* str, uint8_t fd){
     uint64_t address;
     int len = getStringLength(str);
     //chequeo si address cumple con 0x12345678h (0x[0-9a-f]{8}h)??
     if ( len<3 || len >11 || str[0]!='0' || str[1]!='x'){
-        printk("dirección invalida");
+        printkfd(fd,"dirección invalida");
         return;
     }
     //transformo el string en hexa a un int para pasarselo a sys_mem
@@ -19,15 +19,15 @@ void printMem(char* str){
 		else if(str[i]>='a' && str[i]<='f')
 			address = 16*address + str[i]-'a';
 		else{
-            printk("dirección invalida");
+            printkfd(fd,"dirección invalida");
             return;
         }
 	}
     char* mem;
     sysPrintMem(&mem, address);
     for(int i=0; i<32; i++) {
-		printk("%x ", mem[i]);
+		printkfd(fd,"%x ", mem[i]);
 	}
-    printk("\n");
+    printkfd(fd,"\n");
 }
 

@@ -17,23 +17,44 @@ char* regNameArr[]={"RAX: ", "RBX: ", "RCX: ", "RDX: ", "RBP: ", "RSI: ", "RDI: 
 static Exception exceptions[]={&zeroDivision, 0, 0, 0, 0, 0, &invalidOpcode};
 
 void exceptionHandler(char * errMsg){
-    ncPrintAttribute(errMsg, Red, Black); //TODO Revisar como queremos hacer que imprima la salida de error
-    ncNewline();
-    //TODO poner la funcion que imprime los estados de registros
+    uint8_t taskRemoved = removeCurrentTask();
     uint64_t * regArr= prepareRegisters();
-    for (int i = 0; i < 16; ++i) {
-        ncPrint(regNameArr[i]);
-        ncPrintHex(regArr[i]);
-        ncNewline();
-    }
-    ncNewline();
-    //Seccion de frenado de Procesos
-    ncPrintAttribute("Ingrese ESC para reiniciar SHELL", Red, Black);
 
-    removeCurrentTask();
+    char * message = "Ingrese ESC para reiniciar SHELL";
+
+    if(taskRemoved == 0){
+        ncPrintLeftAttribute(errMsg, Red, Black);
+        for (int i = 0; i < 16; ++i) {
+            ncPrintLeft(regNameArr[i]);
+            ncPrintHexLeft(regArr[i]);
+            ncNewlineLeft();
+        }
+        ncNewlineLeft();
+        ncPrintLeftAttribute(message, Red, Black);
+    }
+    else if (taskRemoved == 1){
+        ncPrintRightAttribute(errMsg, Red, Black);
+        for (int i = 0; i < 16; ++i) {
+            ncPrintRight(regNameArr[i]);
+            ncPrintHexRight(regArr[i]);
+            ncNewlineRight();
+        }
+        ncNewlineRight();
+        ncPrintRightAttribute(message, Red, Black);
+
+    }
+    else {
+        ncPrintAttribute(errMsg, Red, Black);
+        for (int i = 0; i < 16; ++i) {
+            ncPrint(regNameArr[i]);
+            ncPrintHex(regArr[i]);
+            ncNewline();
+        }
+        ncNewline();
+        ncPrintAttribute(message, Red, Black);
+    }
+
     runTasks();
-    //aca hay que volver a darle el control al usuario
-    
 }
 
 void exceptionDispatcher(int exception) {

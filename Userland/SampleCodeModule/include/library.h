@@ -4,8 +4,8 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-#define FALSE 0
-#define TRUE !FALSE
+#define TRUE 1
+#define FALSE !TRUE
 
 #define NULL (void *) 0
 
@@ -16,8 +16,10 @@
 #define STDERR 2
 #define STDDER 3
 #define STDIZQ 4
-#define STDBOTH 5
+
+//TODO borrar?
 /*
+#define STDBOTH 5
 #define STDERRDER 6
 #define STDERRIZQ 7
 #define STDERRBOTH 8

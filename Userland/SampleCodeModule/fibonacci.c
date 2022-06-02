@@ -1,6 +1,5 @@
 #include "fibonacci.h"
 #include "library.h"
-#include <stdint.h>
 
 #define FIBO0 0
 #define FIBO1 1
@@ -28,11 +27,4 @@ void restartFibo(){
     current = 0;
     t1 = FIBO0;
     t2 = FIBO1;
-}
-
-void fibo(){
-    restartFibo();
-    while(1){
-        nextFibo(STDOUT);
-    }
 }

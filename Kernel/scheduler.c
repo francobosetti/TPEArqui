@@ -1,5 +1,6 @@
 #include "scheduler.h"
 #include "keyboard.h"
+#include "naiveConsole.h"
 
 #define STOP_FIRST 1
 #define STOP_SECOND 2
@@ -22,6 +23,7 @@ void addTask(taskPointer function){
     tasks[cantTasks++] = function;
     if(tasks[cantTasks-1] == function)
         duplicatedTask = TRUE;
+    currentTask++;
 }
 
 void removeTask(uint8_t task){
@@ -31,12 +33,14 @@ void removeTask(uint8_t task){
     duplicatedTask = FALSE;
 }
 
-void removeCurrentTask(){
+uint8_t removeCurrentTask(){
     if(cantTasks == 0)
-        return;
+        return -1;
     tasks[currentTask] = NULL;
     cantTasks--;
     duplicatedTask = FALSE;
+
+    return currentTask;
 }
 
 void runCurrentTask(){
@@ -53,9 +57,8 @@ void runCurrentTask(){
 }
 
 void runTasks(){
-    uint8_t c;
+    char c;
     while (cantTasks > 0 && (c = getCharKernel()) != EXIT_KEY){
-
         if(c == STOP_FIRST)
             removeTask(STOP_FIRST);
         else if(c == STOP_SECOND)

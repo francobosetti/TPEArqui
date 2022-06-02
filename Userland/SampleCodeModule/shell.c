@@ -5,35 +5,52 @@
 #include "fibonacci.h"
 #include "primeNums.h"
 #include "exceptionTester.h"
+#include "printMem.h"
+#include "sysCalls.h"
 
 #define MAX_LEN_COMMAND 128
-#define NUM_COMMANDS 6
-#define NUM_LOOP_COMMANDS 2
-
-//defino una memoria auxiliar para mi vector de strings
 #define AUXVECTORLENGTH 20
+
+#define PIPE "|"
 
 typedef struct{
     char * name;
-    parallelPointer parallelismFunction;
-    commandPointer function;
-}command;
+    noArgPointer function;
+}noArgCommand;
 
-static command availableCommands[NUM_COMMANDS] = {{"help", NULL, &help},
-                                   { "divZero", NULL, &divideZero},
-                                   { "invalidOpCode", NULL, &invalidOpCode},
-                                   {"inforeg",NULL, &infoReg},
-                                   {"printmem",NULL, &printMem},
-                                   {"time", NULL, &time},
+typedef struct{
+    char * name;
+    argPointer function;
+}argCommand;
+
+#define NUM_COMMANDS_NO_ARG 5
+static noArgCommand noArgumentCommands[NUM_COMMANDS_NO_ARG] = {{"help", &help},
+                                   { "divZero", &divideZero},
+                                   { "invalidOpCode", &invalidOpCode},
+                                   //{"inforeg", &infoReg},
+                                   {"time", &time},
                                    };
 
-static command loopCommands[NUM_LOOP_COMMANDS]= {{"primos", &nextPrime, &primeNumbers},
-                                                {"fibonacci", &nextFibo, &fibo}};
+#define NUM_LOOP_COMMANDS 2
+static noArgCommand loopCommands[NUM_LOOP_COMMANDS]= {{"primos", &nextPrime},
+                                                      {"fibonacci", &nextFibo}};
+
+#define NUM_COMMANDS_ARG 1
+static argCommand argumentCommands[NUM_COMMANDS_ARG] = {{"printmem", &printMem}};
+
+
+enum inputCases{SINGLE_FUNCTION = 1, SINGLE_FUNC_W_ARG, PIPE_NO_ARGS, PIPE_ONE_ARG, PIPE_TWO_ARGS};
+
+#define CANT_ERR_MESSAGES 3
+char * errMessages[CANT_ERR_MESSAGES] = {" : comando no encontrado\n",
+                                        "Combinacion de argumentos no valida\n",
+                                        " : comando no encontrado/ Combinacion invalida de argumentos\n"};
+
 
 
 // funcion para parsear el string, cada fila de la matriz es un string
 //devuelve cantidad de palabras (incluyendo el pipe) que encontro
-int parseString(char m[][MAX_LEN_COMMAND], char * src) {
+int parseString(char m[][MAX_LEN_COMMAND], const char * src) {
     int dim = 0;
     int j = 0;
     int i = 0;
@@ -65,9 +82,7 @@ int parseString(char m[][MAX_LEN_COMMAND], char * src) {
     return dim;
 }
 
-
 void stopForCommand(){
-
     char c;
     char currentLine[MAX_LEN_COMMAND];
     int i = 0;
@@ -90,74 +105,132 @@ void stopForCommand(){
     //probaciones
     char strings[AUXVECTORLENGTH][MAX_LEN_COMMAND];
     int stringsDim = parseString(strings , currentLine);
-    /*
-    if(stringsDim==1){
-        if(!addFunction(strings[0])){
-            printErr(strings[0]);
-            printErr(" : comando no encontrado\n");
-        }
+    char errFlag = FALSE;
 
-    }else if(stringsDim==2){
-
-        if(!addFunction(strings[0])){
-            printErr(strings[0]);
-            printErr(" : comando no encontrado\n");
-        }
-
-
-    }else if(stringsDim==3){                 //pipe de dos funciones sin args
-        if(strcmp(strings[1],'|') == 0){
-            if(!addFunction(strings[0])){
+    switch (stringsDim) {
+        case SINGLE_FUNCTION:
+            if(!addFunction(strings[0]) && !execute(strings[0],STDOUT)){
                 printErr(strings[0]);
-                printErr(" : comando no encontrado\n");
+                printErr(errMessages[0]);
+                errFlag=TRUE;
             }
-            if(!addFunction(strings[2])){
-                printErr(strings[2]);
-                printErr(" : comando no encontrado\n");
+            break;
+        case SINGLE_FUNC_W_ARG:
+            if(!executeArgument(strings[0],strings[1],STDOUT)){
+                printErr(strings[0]);
+                printErr(errMessages[2]);
+                errFlag=TRUE;
             }
-        } else{
-            printErr("Combinacion de argumentos no valida\n");
-        }
+            break;
+        case PIPE_NO_ARGS:
+            if(strcmp(strings[1],PIPE) == 0){
+                if(!addFunction(strings[0]) && !execute(strings[0],STDIZQ)){
+                    printErr(strings[0]);
+                    printErr(errMessages[0]);
+                    errFlag=TRUE;
+                }
+                if(!addFunction(strings[2]) && !execute(strings[2],STDDER)){
+                    printErr(strings[2]);
+                    printErr(errMessages[0]);
+                    errFlag=TRUE;
+                }
+            } else{
+                printErr(errMessages[1]);
+                errFlag=TRUE;
+            }
+            break;
+        case PIPE_ONE_ARG:
+            if(strcmp(strings[1],PIPE) == 0){
+                if(!addFunction(strings[0]) && !execute(strings[0], STDIZQ)){
+                    printErr(strings[0]);
+                    printErr(errMessages[0]);
+                    errFlag=TRUE;
+                }
+                if(!executeArgument(strings[2],strings[3],STDDER)){
+                    printErr(strings[0]);
+                    printErr(errMessages[2]);
+                    errFlag=TRUE;
+                }
+            }
+            else if(strcmp(strings[2],PIPE) == 0){
+                if(!executeArgument(strings[0],strings[1],STDIZQ)){
+                    printErr(strings[0]);
+                    printErr(errMessages[2]);
+                    errFlag=TRUE;
+                }
+                if(!addFunction(strings[3]) && !execute(strings[3],STDDER)){
+                    printErr(strings[3]);
+                    printErr(errMessages[0]);
+                    errFlag=TRUE;
+                }
+            }
+            else{
+                printErr(errMessages[1]);
+                errFlag=TRUE;
+            }
+            break;
+        case PIPE_TWO_ARGS:
+            if(strcmp(strings[2],PIPE) == 0){
+                if(!executeArgument(strings[0],strings[1],STDIZQ)){
+                    printErr(strings[0]);
+                    printErr(errMessages[2]);
+                    errFlag=TRUE;
+                }
+                if(!executeArgument(strings[3],strings[4],STDDER)){
+                    printErr(strings[0]);
+                    printErr(errMessages[2]);
+                    errFlag=TRUE;
+                }
+            } else{
+                printErr(errMessages[1]);
+                errFlag=TRUE;
+            }
+            break;
+        default:
+            printErr(errMessages[1]);
+            errFlag=TRUE;
+    }
 
-    }else if(stringsDim==4){
-        if(strcmp)
-    }
-    else if(stringsDim==5){
+    if(!errFlag)
+        sysRunTasks();
 
-    }
-    else{
-        printErr("Combinacion de argumentos no valida\n");
-    }
-     */
-
-    
-    if(!execute(currentLine)){
-        printErr(currentLine);
-        printErr(" : comando no encontrado\n");
-    }
+    restartStates();
     printk("\n");
 }
 
-int addFunction(char * command){
+void restartStates(){
+    restartFibo();
+    restartPrimes();
+}
 
+int addFunction(char * command){
     for(int i=0 ; i < NUM_LOOP_COMMANDS; ++i){
         if(strcmp(command,loopCommands[i].name) == 0){
-            sysTask(loopCommands[i].function());
+            sysTask(loopCommands[i].function);
             return TRUE;
         }
     }
-
     return FALSE;
 }
 
-int execute(char * command){
-
-    for(int i=0 ; i < NUM_COMMANDS; ++i){
-        if(strcmp(command,availableCommands[i].name) == 0){
-            availableCommands[i].function();
+int execute(char * command, uint8_t fd){
+    for(int i=0 ; i < NUM_COMMANDS_NO_ARG; ++i){
+        if(strcmp(command,noArgumentCommands[i].name) == 0){
+            sysTask(NULL);
+            noArgumentCommands[i].function(fd);
             return TRUE;
         }
     }
+    return FALSE;
+}
 
+int executeArgument(char * command, char * arg, uint8_t fd){
+    for(int i=0 ; i < NUM_COMMANDS_ARG; ++i){
+        if(strcmp(command,argumentCommands[i].name) == 0){
+            sysTask(NULL);
+            argumentCommands[i].function(arg, fd);
+            return TRUE;
+        }
+    }
     return FALSE;
 }

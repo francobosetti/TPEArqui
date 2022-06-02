@@ -13,13 +13,17 @@
 #define STDIZQ 4
 #define STDBOTH 5
 
-#define EXIT_KEY 28 //ASCII para la tecla de ESC
+#define STDERRDER 6
+#define STDERRIZQ 7
+#define STDERRBOTH 8
+
+#define EXIT_KEY 27
 
 typedef void (*taskPointer)(uint8_t fd);
 
 void addTask(taskPointer function);
 void removeTask(uint8_t task);
-void removeCurrentTask();
+uint8_t removeCurrentTask();
 void runCurrentTask();
 void runTasks();
 

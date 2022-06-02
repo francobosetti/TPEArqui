@@ -15,18 +15,6 @@ static  uint32_t leftHeight=0;
 static  uint32_t rightHeight=0;
 
 
-
-void ncPrint(const char * string)
-{
-	int i;
-
-	for (i = 0; string[i] != 0; i++)
-        //hay que llamar a char/charLeft/charRight cuando tengamos lo de pasarle a kernel si es izq der o normal
-		ncPrintChar(string[i]);
-}
-
-
-
 void ncScroll(){
     for (int i=0; i<width*(height-1)*2; i++){
         video[i]=video[i + (width*2)];
@@ -37,6 +25,7 @@ void ncScroll(){
     currentVideo-=width*2;
 
 }
+
 
 void ncScrollLeft(){
     for(int i=0; i<height; i++){
@@ -71,6 +60,22 @@ void checkScroll(){
     }
 }
 
+void ncPrint(const char * string)
+{
+    for (int i = 0; string[i] != 0; i++)
+        ncPrintChar(string[i]);
+}
+
+void ncPrintLeft(const char * string){
+    for (int i = 0; string[i] != 0; i++)
+        ncPrintCharLeftAttribute(string[i], White, Black);
+}
+
+void ncPrintRight(const char * string){
+    for (int i = 0; string[i] != 0; i++)
+        ncPrintCharRightAttribute(string[i], White, Black);
+}
+
 void ncPrintAttribute(const char * string, int color, int backColor){
     int i;
 
@@ -93,6 +98,12 @@ void ncPrintChar(char character)
 	*currentVideo = character;
 	currentVideo += 2;
 }
+void ncPrintLeftAttribute(const char * string, int chColor, int backColor)
+{
+    int i;
+    for (i = 0; string[i] != 0; i++)
+        ncPrintCharLeftAttribute(string[i], chColor, backColor);
+}
 
 void ncPrintCharLeftAttribute(char character, int chColor, int backColor){
     if(currentLeft>widthHalf*2){
@@ -106,6 +117,12 @@ void ncPrintCharLeftAttribute(char character, int chColor, int backColor){
     currentLeft++;
     video[leftHeight*width*2+currentLeft]= backColor<<4 | chColor;
     currentLeft++;
+}
+
+void ncPrintRightAttribute(const char * string, int chColor, int backColor){
+    int i;
+    for (i = 0; string[i] != 0; i++)
+        ncPrintCharRightAttribute(string[i], chColor, backColor);
 }
 
 void ncPrintCharRightAttribute(char character, int chColor, int backColor){
@@ -164,6 +181,14 @@ void ncPrintHex(uint64_t value)
 {
 	ncPrintBase(value, 16);
 }
+void ncPrintHexLeft(uint64_t value)
+{
+    ncPrintBaseLeft(value, 16);
+}
+void ncPrintHexRight(uint64_t value)
+{
+    ncPrintBaseRight(value, 16);
+}
 
 void ncPrintBin(uint64_t value)
 {
@@ -174,6 +199,16 @@ void ncPrintBase(uint64_t value, uint32_t base)
 {
     uintToBase(value, buffer, base);
     ncPrint(buffer);
+}
+void ncPrintBaseLeft(uint64_t value, uint32_t base)
+{
+    uintToBase(value, buffer, base);
+    ncPrintLeft(buffer);
+}
+void ncPrintBaseRight(uint64_t value, uint32_t base)
+{
+    uintToBase(value, buffer, base);
+    ncPrintRight(buffer);
 }
 
 void ncClear()
