@@ -22,6 +22,12 @@
 #define STDERR 2
 #define STDDER 3
 #define STDIZQ 4
+#define STDBOTH 5
+/*
+#define STDERRDER 6
+#define STDERRIZQ 7
+#define STDERRBOTH 8
+ */
 #define CANT_GENERAL_REGISTERS 16
 #define MAX_BUFF 512
 
@@ -65,7 +71,7 @@ int sys_write(uint8_t fd, char * buff, uint64_t length){
 
     uint8_t color = White;
     //seteo color rojo en caso de que sea STDERR
-    if (fd == STDERR)
+    if (fd == STDERR /*|| fd == STDERRDER ||fd == STDERRIZQ ||  fd == STDERRBOTH*/)
         color = Red;
 
     int i;
@@ -73,12 +79,15 @@ int sys_write(uint8_t fd, char * buff, uint64_t length){
         if ( buff[i] == '\n'){
             switch (fd) {
                 case STDDER:
+                //case STDERRDER:
                     ncNewlineRight();
                     break;
                 case STDIZQ:
+               // case STDERRIZQ:
                     ncNewlineLeft();
                     break;
                 case STDBOTH:
+                //case STDERRBOTH:
                     ncNewlineBoth();
                     break;
                 default:
@@ -90,12 +99,15 @@ int sys_write(uint8_t fd, char * buff, uint64_t length){
         else{
             switch (fd) {
                 case STDDER:
+                //case STDERRDER:
                     ncPrintCharRightAttribute(buff[i], color, Black);
                     break;
                 case STDIZQ:
+                //case STDERRIZQ:
                     ncPrintCharLeftAttribute(buff[i], color, Black);
                     break;
                 case STDBOTH:
+                //case STDERRBOTH:
                     ncPrintCharBothAttribute(buff[i], color, Black);
                     break;
                 default:

@@ -8,6 +8,7 @@ typedef void (*parallelPointer)(uint8_t fd);
 
 void stopForCommand();
 int execute(char * command);
+int isFunction(char * command);
 
 #endif //SAMPLECODEMODULE_SHELL_H
 

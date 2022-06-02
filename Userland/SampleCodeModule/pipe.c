@@ -5,7 +5,7 @@
 #include "primeNums.h"
 #include "sysCalls.h"
 
-void pipe(commandPointer f1, commandPointer f2){
+void pipe(commandPointer f1,char * arg1, commandPointer f2, char * arg2){
 
 }
 
