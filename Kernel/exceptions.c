@@ -5,9 +5,6 @@
 #include "scheduler.h"
 #include "interrupts.h"
 
-#define ZERO_EXCEPTION_ID 0
-#define INVALID_OPCODE 6
-
 typedef void (*Exception)(void);
 
 static void zeroDivision();
@@ -64,11 +61,12 @@ void exceptionHandler(char * errMsg){
         ncNewline();
     }
 
-    _sti();
+
 
     if(getCantTasks()!=0)
         runTasks();
     else{
+        _sti();
         do{
             _hlt();//hlt frena el CPU hasta que se detecte la proxima interrupcion externa
         }while((getCharKernel()) != EXIT_KEY);

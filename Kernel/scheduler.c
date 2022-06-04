@@ -127,8 +127,8 @@ int checkNull(){
 }*/
 
 void runTasks(){
+    _sti();
     if(!running){
-        _sti();
         setFds();
         running=TRUE;
         twoTaskFlag = (cantTasks == MAX_TASKS);
