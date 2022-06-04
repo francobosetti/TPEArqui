@@ -3,6 +3,7 @@
 #include "lib.h"
 #include "keyboard.h"
 #include "scheduler.h"
+#include "interrupts.h"
 
 #define ZERO_EXCEPTION_ID 0
 #define INVALID_OPCODE 6
@@ -24,37 +25,50 @@ void exceptionHandler(char * errMsg){
 
     if(taskRemoved == 0){
         ncPrintLeftAttribute(errMsg, Red, Black);
+        ncNewlineLeft();
         for (int i = 0; i < 16; ++i) {
             ncPrintLeft(regNameArr[i]);
             ncPrintHexLeft(regArr[i]);
             ncNewlineLeft();
         }
-        ncNewlineLeft();
         ncPrintLeftAttribute(message, Red, Black);
+        ncNewlineLeft();
     }
     else if (taskRemoved == 1){
         ncPrintRightAttribute(errMsg, Red, Black);
+        ncNewlineRight();
         for (int i = 0; i < 16; ++i) {
             ncPrintRight(regNameArr[i]);
             ncPrintHexRight(regArr[i]);
             ncNewlineRight();
         }
-        ncNewlineRight();
         ncPrintRightAttribute(message, Red, Black);
+        ncNewlineRight();
 
     }
     else {
         ncPrintAttribute(errMsg, Red, Black);
+        ncNewline();
         for (int i = 0; i < 16; ++i) {
             ncPrint(regNameArr[i]);
             ncPrintHex(regArr[i]);
             ncNewline();
         }
-        ncNewline();
         ncPrintAttribute(message, Red, Black);
+        ncNewline();
     }
 
-    runTasks();
+    _sti();
+    if(getCantTasks()!=0)
+        runTasks();
+    else{
+        do{
+            _hlt();//hlt frena el CPU hasta que se detecte la proxima interrupcion externa
+        }while((getCharKernel()) != EXIT_KEY);
+        ncClear();
+        give_control_to_user();
+    }
+
 }
 
 void exceptionDispatcher(int exception) {

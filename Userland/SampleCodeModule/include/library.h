@@ -17,13 +17,12 @@
 #define STDDER 3
 #define STDIZQ 4
 
-//TODO borrar?
-/*
+
 #define STDBOTH 5
 #define STDERRDER 6
 #define STDERRIZQ 7
 #define STDERRBOTH 8
- */
+
 #define BUFFSIZE 128
 #define DECIMALBASE 10
 #define HEXABASE 16

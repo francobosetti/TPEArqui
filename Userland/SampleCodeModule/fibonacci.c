@@ -20,7 +20,6 @@ void nextFibo(uint8_t fd){
     t1 = t2;
     t2 = nextTerm;
     current++;
-
 }
 
 void restartFibo(){

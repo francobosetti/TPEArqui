@@ -122,11 +122,12 @@ char * getBuffer(int * writerVal){
 }
 
 char getCharKernel(){
-    char c;
-    int rta;
-    do {
-        rta = sys_read(STDIN,&c, 1);
-    } while ( rta != 1 );
+    char c = 0;
+    uint16_t ret = 0;
+    do{
+        ret = sys_read(STDIN,&c,1);
+    } while (ret != 1);
+    //TODO VER ESTA CONDICION DE CORTE, ME PARECE QUE ESTA MAL
     return c;
 }
 

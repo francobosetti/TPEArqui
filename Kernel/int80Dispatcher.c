@@ -11,20 +11,30 @@
 #define SYS_MEM 70
 //#define SYS_REGISTERS 71
 #define SYS_HASTICKED 72
-#define SYS_TASK 73
-#define SYS_RUNTASKS 74
+#define SYS_ONETASK 73
+#define SYS_TWOTASKS 74
 #define SYS_TIME 201
 
 #define GPRSIZE 16
 
-
-#define CANT_GENERAL_REGISTERS 16
 #define MAX_BUFF 512
 
 #define TRUE 1
 #define FALSE !TRUE
 
-typedef void (*commandPointer)(void);
+#define NO_ARG_TASK 1
+typedef void (*noArgPointer)(uint8_t fd);
+typedef struct{
+    noArgPointer function;
+    uint8_t isLoop;
+}noArgTask;
+
+#define ARG_TASK 2
+typedef void (*argPointer)(char * arg, uint8_t fd);
+typedef struct{
+    argPointer function;
+    char * arg1;
+}argTask;
 
 static uint16_t reader = 0;
 
@@ -36,11 +46,10 @@ static unsigned int bcdToDec(unsigned char time){
 int sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ARREGLAR CANTIDAD DE BYTES DEVUELTOS
 
     int writer;
-
     int i;
     char * kbdbuffer = getBuffer(&writer);
-    
-    if ( reader == writer)
+
+    if (reader == writer)
         return -1;
 
     int addedNewLine = FALSE;
@@ -50,8 +59,8 @@ int sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ARREGLAR CANTIDA
         if ( kbdbuffer[reader] == '\n')
             addedNewLine = TRUE;
     }
+    //hasta aca anda bien
     return i;
-    //salgo porque lei el newline
 }
 
 int sys_write(uint8_t fd, char * buff, uint64_t length){
@@ -161,15 +170,18 @@ void sys_mem(uint8_t * mem, uint64_t address){
     }
 }
 
-void sys_task(commandPointer function){
-    addTask(function);
-}
-
-void sys_runTasks(){
+void sys_oneTask(void * str, uint8_t flag){
+    addTask(str, flag);
     runTasks();
 }
 
-int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2) {
+void sys_twoTasks(void * str1, uint8_t flag1, void * str2, uint8_t flag2){
+    addTask(str1, flag1);
+    addTask(str2, flag2);
+    runTasks();
+}
+
+int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3) {
     switch (code) {
         case SYS_READ: //arg0: fd , arg1: buff, arg2: length
             return sys_read( (uint8_t) arg0, (char *) arg1, (uint64_t) arg2);
@@ -187,11 +199,11 @@ int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2)
         case SYS_MEM:  //arg0: uint8_t * mem, array de 32 lugares de 8bits, arg1: uint64_t address, direc para buscar
             sys_mem((uint8_t *) arg0, (uint64_t) arg1); //todo revisar el tema de que si va en userLand o en KS
             break;
-        case SYS_TASK:
-            sys_task((commandPointer) arg0);
+        case SYS_ONETASK:
+            sys_oneTask((void *) arg0, (uint8_t) arg1);
             break;
-        case SYS_RUNTASKS:
-            sys_runTasks();
+        case SYS_TWOTASKS:
+            sys_twoTasks((void *) arg0, (uint8_t) arg1, (void *) arg2, (uint8_t) arg3);
             break;
 
             /*

@@ -152,15 +152,25 @@ _int80Handler:
     push rbp
     mov rbp, rsp
 
+
+    push rcx
     push rdx
     push rsi
     push rdi
     push rax
+    ;el stack queda rax, rdi, rsi, rdx, rcx
 
+
+    ; rdi, numerosyscall
+    ; rsi, arg1
+    ; rdx arg2
+    ;rcx arg3
+    ;r8 arg4
     pop rdi
     pop rsi
     pop rdx
     pop rcx
+    pop r8
 
     call _int80Dispatcher
 	;tengo que devolver el valor de retorno, uso section .bss

@@ -19,12 +19,11 @@
 
 #define EXIT_KEY 27
 
-typedef void (*taskPointer)(uint8_t fd);
-
-void addTask(taskPointer function);
+void addTask(void * str, uint8_t flag);
 void removeTask(uint8_t task);
 uint8_t removeCurrentTask();
 void runCurrentTask();
 void runTasks();
+uint8_t getCantTasks();
 
 #endif //SCHEDULER_H

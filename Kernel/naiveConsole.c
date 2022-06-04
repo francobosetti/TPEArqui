@@ -224,6 +224,14 @@ void ncClear()
     leftHeight=0;
 }
 
+void ncClearRight(){
+    return;
+}
+
+void ncClearLeft(){
+    return;
+}
+
 void ncDeleteChar(){
     if(currentVideo >= video + 2){
         currentVideo -= 2;

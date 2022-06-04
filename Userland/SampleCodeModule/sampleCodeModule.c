@@ -8,10 +8,10 @@ static int firstEntry = TRUE;
 int main() {
     //esta va a ser mi shell
     //consumo hasta el newline
+    if(firstEntry)
+        printk("Lettuce OS shell\n");
 
-    printk("Lettuce OS shell\n");
-
-    while ( firstEntry && getChar() != '\n')
+    while (firstEntry && getChar() != '\n')
         ;
 
     firstEntry = FALSE;

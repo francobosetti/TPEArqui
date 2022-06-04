@@ -11,6 +11,11 @@ GLOBAL getYear
 GLOBAL prepareRegisters
 GLOBAL getByte
 
+GLOBAL give_control_to_user
+
+EXTERN getStackBase
+EXTERN runSampleCodeModule
+
 section .text
 	
 cpuVendor:
@@ -119,6 +124,11 @@ prepareRegisters:
 
     mov rax, GPRv
     ret
+
+give_control_to_user:
+    call getStackBase	        ; Get thet stack address
+	mov rsp, rax				; Set up the stack with the returned address
+	call runSampleCodeModule
 
 
 section .bss
