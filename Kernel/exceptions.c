@@ -10,58 +10,33 @@ typedef void (*Exception)(void);
 static void zeroDivision();
 static void invalidOpcode();
 
-char* regNameArr[]={"RAX: ", "RBX: ", "RCX: ", "RDX: ", "RBP: ", "RSI: ", "RDI: ", "RSP: ", "R8: ","R9: ","R10: ","R11: ","R12: ","R13: ","R14: ","R15: "};
+char* regNameArr[]={"RAX: ", "RBX: ", "RCX: ", "RDX: ", "RBP: ", "RSI: ", "RDI: ", "RSP: ", "R8:  ","R9:  ","R10: ","R11: ","R12: ","R13: ","R14: ","R15: "};
 
 static Exception exceptions[]={&zeroDivision, 0, 0, 0, 0, 0, &invalidOpcode};
 
 void exceptionHandler(char * errMsg){
-    uint8_t cantTasks = getCantTasks();
     uint8_t taskRemoved = removeCurrentTask();
     uint64_t * regArr= prepareRegisters();
-
+    uint8_t fd = STDERR;
     char * message = "Ingrese ESC para reiniciar SHELL";
 
-    if(cantTasks>1){
-        if(taskRemoved == firstTask){
-            ncClearLeft();
-            ncPrintLeftAttribute(errMsg, Red, Black);
-            ncNewlineLeft();
-            for (int i = 0; i < 16; ++i) {
-                ncPrintLeftAttribute(regNameArr[i], Red, Black);
-                ncPrintHexLeft(regArr[i]);
-                ncNewlineLeft();
-            }
-            ncPrintLeftAttribute(message, Red, Black);
-            ncNewlineLeft();
-        }
-        else if (taskRemoved == secondTask){
-            ncClearRight();
-            ncPrintRightAttribute(errMsg, Red, Black);
-            ncNewlineRight();
-            for (int i = 0; i < 16; ++i) {
-                ncPrintRightAttribute(regNameArr[i], Red, Black);
-                ncPrintHexRight(regArr[i]);
-                ncNewlineRight();
-            }
-            ncPrintRightAttribute(message, Red, Black);
-            ncNewlineRight();
-
-        }
-    }
-    else {
-        ncClear();
-        ncPrintAttribute(errMsg, Red, Black);
-        ncNewline();
-        for (int i = 0; i < 16; ++i) {
-            ncPrintAttribute(regNameArr[i], Red, Black);
-            ncPrintHex(regArr[i]);
-            ncNewline();
-        }
-        ncPrintAttribute(message, Red, Black);
-        ncNewline();
+    if(getTwoTaskFlag()){
+        if(taskRemoved == firstTask)
+            fd=STDERRIZQ;
+        else if (taskRemoved == secondTask)
+            fd=STDERRDER;
     }
 
-
+    ncClearFd(fd);
+    ncPrintFdAttribute(fd, errMsg, Red, Black);
+    ncNewLineFd(fd);
+    for (int i = 0; i < 16; ++i) {
+        ncPrintFdAttribute(fd, regNameArr[i], Red, Black);
+        ncPrintHexFdAttribute(fd, regArr[i], Red, Black);
+        ncNewLineFd(fd);
+    }
+    ncPrintFdAttribute(fd, message, Red, Black);
+    ncNewLineFd(fd);
 
     if(getCantTasks()!=0)
         runTasks();
@@ -71,6 +46,8 @@ void exceptionHandler(char * errMsg){
             _hlt();//hlt frena el CPU hasta que se detecte la proxima interrupcion externa
         }while((getCharKernel()) != EXIT_KEY);
         ncClear();
+        ncNewline();
+        resetScheduler();
         give_control_to_user();
     }
 

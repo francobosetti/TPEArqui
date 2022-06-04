@@ -48,11 +48,14 @@ void setFds(){
 }
 
 int isDuplicatedNoArg(){
-    return cantTasks > 1 && (noArgTasks[cantTasks-2]->function == noArgTasks[cantTasks-1]->function);
+    return  cantTasks > 1 &&
+            (noArgTasks[cantTasks-2]->function == noArgTasks[cantTasks-1]->function);
 }
 
 int isDuplicatedArg(){
-    return cantTasks > 1 && (argTasks[cantTasks-2]->function == argTasks[cantTasks-1]->function);
+    return  cantTasks > 1 &&
+            (argTasks[cantTasks-2]->function == argTasks[cantTasks-1]->function) &&
+            (argTasks[cantTasks-2]->arg1 == argTasks[cantTasks-1]->arg1);
 }
 
 void addTask(void * str, uint8_t flag){
@@ -70,7 +73,7 @@ void addTask(void * str, uint8_t flag){
 }
 
 void removeTask(uint8_t task){
-    if(task<=0 || task > MAX_TASKS)
+    if(task<0 || task > MAX_TASKS)
         return;
     noArgTasks[task] = NULL;
     argTasks[task] = NULL;
@@ -121,13 +124,13 @@ uint8_t getCantTasks(){
     return cantTasks;
 }
 
-/*
-int checkNull(){
-    return !(argTasks[0]==NULL && argTasks[1]==NULL) || !(noArgTasks[0]==NULL && noArgTasks[1]==NULL);
-}*/
+uint8_t getTwoTaskFlag(){
+    return twoTaskFlag;
+}
 
 void runTasks(){
     _sti();
+
     if(!running){
         setFds();
         running=TRUE;
@@ -136,10 +139,12 @@ void runTasks(){
 
     char c = 0;
     do {
-        if(c == STOP_FIRST)
-            removeTask(firstTask);
-        else if(c == STOP_SECOND)
-            removeTask(secondTask);
+        if(twoTaskFlag){
+            if(c == STOP_FIRST)
+                removeTask(firstTask);
+            else if(c == STOP_SECOND)
+                removeTask(secondTask);
+        }
 
         while(currentTask < MAX_TASKS){
             runCurrentTask();

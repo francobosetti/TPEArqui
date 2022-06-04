@@ -5,97 +5,84 @@
 
 #define BUFFSIZE 128
 
+#define ERROR 0
+#define NOERROR 1
 
 
-/*
- while((c=get_char()) != '\n' && counter < 32){
-    if(( c >= '0' && c <= '9')) {
-       num[counter++] = (c - '0');
-    }
-    else if(( c >= 'A' ) && ( c <= 'F' )) {
-       num[counter++] = (c - 'A' + 10);
-    }
-    else if(( c >= 'a') && ( c <= 'f')) {
-        num[counter++] = (c - 'a' + 10);
-    }
-    else if(c == '\b') {
-      if(counter > 0){
-        put_char(STDOUT, c);
-        num[--counter] = 0;
-      }
-    }
-    else {
-      num[counter++] = 16 + c;
-    }
-    if(c != '\b'){
-      put_char(STDOUT, c);
-    }
- */
+// recuperada de https://github.com/dart-lang/sdk/issues/2624 y adaptada para que funcione en C
 
+static uint64_t hexToNum(char * hex, int * error)
+{
 
+    if ( hex == NULL || hex[0] != '0' || hex[1] != 'x' ){
+        *error = ERROR;
+        return 0;
+    }
 
-#define BITMAX 64
-/*
-uint64_t stringToHexa(char * buff){
+    int i = 2;
 
-    //sumo 2 a bitMax considerando el 0x......
-    for ( int i = 0; buff[i] && i < BITMAX + 2; i++){
-            char c = buff[i];
-        if(( c >= '0' && c <= '9')) {
-            num[counter++] = (c - '0');
+    uint64_t val = 0;
+
+    int len = getStringLength(hex);
+    for (; i < len; i++)
+    {
+        int hexDigit = hex[i];
+        if (hexDigit >= 48 && hexDigit <= 57)
+        {
+            val += (hexDigit - 48) * (1 << (4 * (len - 1 - i)));
         }
-        else if(( c >= 'A' ) && ( c <= 'F' )) {
-            num[counter++] = (c - 'A' + 10);
+        else if (hexDigit >= 65 && hexDigit <= 70)
+        {
+            // A..F
+            val += (hexDigit - 55) * (1 << (4 * (len - 1 - i)));
         }
-        else if(( c >= 'a') && ( c <= 'f')) {
-            num[counter++] = (c - 'a' + 10);
+        else if (hexDigit >= 97 && hexDigit <= 102)
+        {
+            // a..f
+            val += (hexDigit - 87) * (1 << (4 * (len - 1 - i)));
         }
-        else if(c == '\b') {
-            if(counter > 0){
-                put_char(STDOUT, c);
-                num[--counter] = 0;
-            }
+        else
+        {
+            *error = ERROR;
+            return 0;
         }
-        else {
-            num[counter++] = 16 + c;
-        }
-        if(c != '\b'){
-            put_char(STDOUT, c);
-        }
-        }
-}*/
+    }
+    *error = NOERROR;
+    return val;
+}
 
 
 void printMem(char * str, uint8_t fd){
     uint64_t address;
-    int len = getStringLength(str);
-    //chequeo si address cumple con 0x12345678h (0x[0-9a-f]{8}h)??
-    if ( len<3 || len >11 || str[0]!='0' || str[1]!='x'){
-        printkfd(fd,"Dirección invalida");
+
+    int controlFlag;
+    address = hexToNum(str,&controlFlag);
+
+    if (controlFlag == ERROR){
+        if(fd==STDOUT)
+            fd = STDERR;
+        else
+            fd+=DISTANCE_TO_ERRORFD;
+
+        printkfd(fd,"Argumento Invalido");
         return;
     }
-    //transformo el string en hexa a un int para pasarselo a sys_mem
-    for(int i=2; i<len; i++){
-		if(str[i]>='0' && str[i]<='9')
-			address = 16*address + str[i]-'0';
-		else if(str[i]>='a' && str[i]<='f')
-			address = 16*address + str[i]-'a';
-		else{
-            printkfd(fd,"Dirección invalida");
-            return;
-        }
-	}
 
     uint8_t mem[BUFFSIZE];
-    printkfd(fd, "%d\n", address);
-    int retval = sysPrintMem(mem, address);
-    if(retval==-1){
+
+    if(sysPrintMem(mem, address)==-1){
+        if(fd==STDOUT)
+            fd = STDERR;
+        else
+            fd+=DISTANCE_TO_ERRORFD;
+
         printkfd(fd, "Direccion invalida\n");
     }else{
         for(int t=0; t<32; t++) {
-            printkfd(fd,"Posicion(%d) = %x\n", t, (int) mem[t]);
+            printkfd(fd,"%x ", (int) mem[t]);
         }
         printkfd(fd,"\n");
     }
+
 }
 

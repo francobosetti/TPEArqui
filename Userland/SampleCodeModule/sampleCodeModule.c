@@ -1,5 +1,7 @@
 #include "library.h"
 #include "shell.h"
+#include "help.h"
+
 #define TRUE 1
 #define FALSE !TRUE
 
@@ -8,8 +10,10 @@ static int firstEntry = TRUE;
 int main() {
     //esta va a ser mi shell
     //consumo hasta el newline
-    if(firstEntry)
-        printk("Lettuce OS shell\n");
+    if(firstEntry){
+        printk("Lettuce OS shell\n\n");
+        help(STDOUT);
+    }
 
     while (firstEntry && getChar() != '\n')
         ;

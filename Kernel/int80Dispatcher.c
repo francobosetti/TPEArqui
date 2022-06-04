@@ -7,17 +7,16 @@
 #include "registers.h"
 #include "interrupts.h"
 
-#define SYS_READ 0
-#define SYS_WRITE 1
-#define SYS_CLEARSCREEN 69
-#define SYS_MEM 70
-#define SYS_REGISTERS 71
-#define SYS_SLEEP 72
-#define SYS_ONETASK 73
-#define SYS_TWOTASKS 74
-#define SYS_TIME 201
+enum sysCalls{  SYS_READ = 0,
+                SYS_WRITE = 1,
+                SYS_CLEARSCREEN = 69,
+                SYS_MEM = 70,
+                SYS_REGISTERS = 71,
+                SYS_SLEEP = 72,
+                SYS_TASK = 73,
+                SYS_RUNTASKS = 74,
+                SYS_TIME = 201};
 
-#define GPRSIZE 16
 #define CANTBYTES 32
 #define MAX_BUFF 512
 
@@ -76,46 +75,14 @@ int sys_write(uint8_t fd, char * buff, uint64_t length){
 
     int i;
     for (i = 0; i < length; ++i) {
-        if ( buff[i] == '\n'){
-            switch (fd) {
-                case STDDER:
-                case STDERRDER:
-                    ncNewlineRight();
-                    break;
-                case STDIZQ:
-                case STDERRIZQ:
-                    ncNewlineLeft();
-                    break;
-                case STDBOTH:
-                case STDERRBOTH:
-                    ncNewlineBoth();
-                    break;
-                default:
-                    ncNewline();
-            }
-        }
+        if ( buff[i] == '\n')
+            ncNewLineFd(fd);
         else if ( buff[i] == '\b')
             ncDeleteChar();
-        else{
-            switch (fd) {
-                case STDDER:
-                case STDERRDER:
-                    ncPrintCharRightAttribute(buff[i], color, Black);
-                    break;
-                case STDIZQ:
-                case STDERRIZQ:
-                    ncPrintCharLeftAttribute(buff[i], color, Black);
-                    break;
-                case STDBOTH:
-                case STDERRBOTH:
-                    ncPrintCharBothAttribute(buff[i], color, Black);
-                    break;
-                default:
-                    ncPrintCharAttribute(buff[i], color, Black);
-            }
-        }
-
+        else
+            ncPrintCharFdAttribute(fd, buff[i], color, Black);
     }
+
     return i;
 }
 
@@ -147,7 +114,6 @@ void sys_clearscreen(){
     ncClear();
 }
 
-
 int sys_registers(uint64_t regs[]){
     return getRegisters(regs);
 }
@@ -164,14 +130,11 @@ int sys_mem(uint8_t * mem, uint64_t address){
     return 0;
 }
 
-void sys_oneTask(void * str, uint8_t flag){
+void sys_task(void * str, uint8_t flag){
     addTask(str, flag);
-    runTasks();
 }
 
-void sys_twoTasks(void * str1, uint8_t flag1, void * str2, uint8_t flag2){
-    addTask(str1, flag1);
-    addTask(str2, flag2);
+void sys_run(){
     runTasks();
 }
 
@@ -193,11 +156,11 @@ int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2,
             break;
         case SYS_MEM:  //arg0: uint8_t * mem, array de 32 lugares de 8bits, arg1: uint64_t address, direc para buscar
             return sys_mem((uint8_t *) arg0, (uint64_t) arg1);
-        case SYS_ONETASK:
-            sys_oneTask((void *) arg0, (uint8_t) arg1);
+        case SYS_TASK:
+            sys_task((void *) arg0, (uint8_t) arg1);
             break;
-        case SYS_TWOTASKS:
-            sys_twoTasks((void *) arg0, (uint8_t) arg1, (void *) arg2, (uint8_t) arg3);
+        case SYS_RUNTASKS:
+            sys_run();
             break;
         case SYS_REGISTERS:
             return sys_registers( (uint64_t *) arg0);

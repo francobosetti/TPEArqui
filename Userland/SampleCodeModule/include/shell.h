@@ -22,9 +22,11 @@ typedef struct{
 
 void stopForCommand();
 void restartStates();
-int execute(noArgTask * str, char * command);
-int executeArgument(argTask * str, char * command, char * arg);
-int addFunction(noArgTask * str, char * command);
+
+int addNoArgFunc(noArgTask * str, char * command);
+int addArgFunc(argTask * str, char * command, char * arg);
+int addLoopFunc(noArgTask * str, char * command);
+
 
 
 

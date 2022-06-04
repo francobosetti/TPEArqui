@@ -23,6 +23,8 @@
 #define STDERRIZQ 7
 #define STDERRBOTH 8
 
+#define DISTANCE_TO_ERRORFD 3
+
 #define BUFFSIZE 128
 #define DECIMALBASE 10
 #define HEXABASE 16

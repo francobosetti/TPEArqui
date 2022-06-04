@@ -18,6 +18,8 @@ void removeTask(uint8_t task);
 uint8_t removeCurrentTask();
 void runCurrentTask();
 void runTasks();
+void resetScheduler();
+uint8_t getTwoTaskFlag();
 uint8_t getCantTasks();
 
 #endif //SCHEDULER_H

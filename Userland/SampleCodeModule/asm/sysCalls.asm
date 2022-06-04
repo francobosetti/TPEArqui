@@ -5,8 +5,8 @@ GLOBAL sysClearScreen
 GLOBAL sysPrintMem
 GLOBAL sysInfoReg
 GLOBAL sysSleep
-GLOBAL sysOneTask
-GLOBAL sysTwoTasks
+GLOBAL sysTask
+GLOBAL sysRunTasks
 
 section .data
     SYSREAD equ 0
@@ -15,8 +15,8 @@ section .data
     SYSPRINTMEM equ 70
     SYSINFOREG equ 71
     SYSSLEEP equ 72
-    SYSONETASK equ 73
-    SYSTWOTASKS equ 74
+    SYSTASK equ 73
+    SYSRUNTASKS equ 74
     SYSTIME equ 201
 
 section .text
@@ -105,10 +105,10 @@ sysSleep:
     pop rbp
     ret
 
-sysOneTask:
+sysTask:
     push rbp
     mov rbp, rsp
-    mov rax, SYSONETASK
+    mov rax, SYSTASK
     ;en rdi ya tengo el puntero a la task
     ;en rsi tengo el tipo de dato, 1 si con arg no ciclica,
 
@@ -118,10 +118,10 @@ sysOneTask:
     ret
 
 
-sysTwoTasks:
+sysRunTasks:
     push rbp
     mov rbp, rsp
-    mov rax, SYSTWOTASKS
+    mov rax, SYSRUNTASKS
 
     int 80h
     mov rsp, rbp

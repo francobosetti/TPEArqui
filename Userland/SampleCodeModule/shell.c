@@ -11,7 +11,6 @@
 
 #define MAX_LEN_COMMAND 128
 #define AUXVECTORLENGTH 20
-#define MAXCOMMANDS 2
 
 #define PIPE "|"
 
@@ -49,9 +48,6 @@ char * errMessages[CANT_ERR_MESSAGES] = {" : comando no encontrado\n",
                                         "Combinacion de argumentos no valida\n",
                                         " : comando no encontrado/ Combinacion invalida de argumentos\n"};
 
-static argTask * arrArgTask[MAXCOMMANDS]={NULL, NULL};
-static noArgTask * arrNoArgTask[MAXCOMMANDS]={NULL, NULL};
-static int numCommands=0;
 
 // funcion para parsear el string, cada fila de la matriz es un string
 //devuelve cantidad de palabras (incluyendo el pipe) que encontro
@@ -114,30 +110,31 @@ void stopForCommand(){
 
     currentLine[i] = 0;
 
-    //probaciones
     char strings[AUXVECTORLENGTH][MAX_LEN_COMMAND];
     int stringsDim = parseString(strings , currentLine);
     char errFlag = FALSE;
+    char pipeFlag=FALSE;
     argTask argTask1, argTask2;
     noArgTask noArgTask1, noArgTask2;
 
     switch (stringsDim) {
         case SINGLE_FUNCTION:
-            if(!addFunction(&noArgTask1,strings[0]) && !execute(&noArgTask1,strings[0])){
+            if(!addLoopFunc(&noArgTask1,strings[0]) && !addNoArgFunc(&noArgTask1,strings[0])){
                 errArguments(strings[0], errMessages[0], &errFlag);
             }
             break;
         case SINGLE_FUNC_W_ARG:
-            if(!executeArgument(&argTask1,strings[0],strings[1])){
+            if(!addArgFunc(&argTask1,strings[0],strings[1])){
                 errArguments(strings[0], errMessages[2], &errFlag);
             }
             break;
         case PIPE_NO_ARGS:
             if(strcmp(strings[1],PIPE) == 0){
-                if(!addFunction(&noArgTask1,strings[0]) && !execute(&noArgTask1,strings[0])){
+                pipeFlag=TRUE;
+                if(!addLoopFunc(&noArgTask1,strings[0]) && !addNoArgFunc(&noArgTask1,strings[0])){
                     errArguments(strings[0], errMessages[0], &errFlag);
                 }
-                if(!addFunction(&noArgTask2,strings[2]) && !execute(&noArgTask2,strings[2])){
+                if(!addLoopFunc(&noArgTask2,strings[2]) && !addNoArgFunc(&noArgTask2,strings[2])){
                     errArguments(strings[2], errMessages[0], &errFlag);
                 }
             } else{
@@ -147,18 +144,20 @@ void stopForCommand(){
             break;
         case PIPE_ONE_ARG:
             if(strcmp(strings[1],PIPE) == 0){
-                if(!addFunction(&noArgTask1,strings[0]) && !execute(&noArgTask1,strings[0])){
+                pipeFlag=TRUE;
+                if(!addLoopFunc(&noArgTask1,strings[0]) && !addNoArgFunc(&noArgTask1,strings[0])){
                     errArguments(strings[0], errMessages[0], &errFlag);
                 }
-                if(!executeArgument(&argTask2,strings[2],strings[3])){
+                if(!addArgFunc(&argTask2,strings[2],strings[3])){
                     errArguments(strings[2], errMessages[2], &errFlag);
                 }
             }
             else if(strcmp(strings[2],PIPE) == 0){
-                if(!executeArgument(&argTask1,strings[0],strings[1])){
+                pipeFlag=TRUE;
+                if(!addArgFunc(&argTask1,strings[0],strings[1])){
                     errArguments(strings[0], errMessages[2], &errFlag);
                 }
-                if(!addFunction(&noArgTask2,strings[3]) && !execute(&noArgTask2,strings[3])){
+                if(!addLoopFunc(&noArgTask2,strings[3]) && !addNoArgFunc(&noArgTask2,strings[3])){
                     errArguments(strings[3], errMessages[0], &errFlag);
                 }
             }
@@ -169,10 +168,11 @@ void stopForCommand(){
             break;
         case PIPE_TWO_ARGS:
             if(strcmp(strings[2],PIPE) == 0){
-                if(!executeArgument(&argTask1,strings[0],strings[1])){
+                pipeFlag=TRUE;
+                if(!addArgFunc(&argTask1,strings[0],strings[1])){
                     errArguments(strings[0], errMessages[2], &errFlag);
                 }
-                if(!executeArgument(&argTask2,strings[3],strings[4])){
+                if(!addArgFunc(&argTask2,strings[3],strings[4])){
                     errArguments(strings[3], errMessages[2], &errFlag);
                 }
             } else{
@@ -184,68 +184,50 @@ void stopForCommand(){
             printErr(errMessages[1]);
             errFlag=TRUE;
     }
+
     if(!errFlag){
-        switch (numCommands) {
-            case 1:
-                if(arrNoArgTask[0]!=NULL){
-                    //syscall de 1 task con arrNoArgTask[0]
-                    sysOneTask(arrNoArgTask[0], NO_ARG_TASK);
-                }
-                else{
-                    //syscall de 1 task con arrArgTask[0]
-                    sysOneTask(arrArgTask[0], ARG_TASK);
-                }
-                break;
-            case 2:
-                sysClearScreen();
-                //syscall de 2 tasks
-                sysTwoTasks(arrArgTask[0]!=NULL?arrArgTask[0]:arrNoArgTask[0],arrArgTask[0]!=NULL?ARG_TASK:NO_ARG_TASK,arrArgTask[1]!=NULL?arrArgTask[1]:arrNoArgTask[1],arrArgTask[1]!=NULL?ARG_TASK:NO_ARG_TASK);
-                break;
-        }
+        if(pipeFlag)
+            sysClearScreen();
+        sysRunTasks();
     }
 }
 
 void restartStates(){
     restartFibo();
     restartPrimes();
-    for (int i = 0; i <MAXCOMMANDS ; ++i) {
-        arrNoArgTask[i]=NULL;
-        arrArgTask[i]=NULL;
-    }
-
-    numCommands=0;
 }
 
-int addFunction(noArgTask * str, char * command){
+int addLoopFunc(noArgTask * str, char * command){
     for(int i=0 ; i < NUM_LOOP_COMMANDS; ++i){
         if(strcmp(command,loopCommands[i].name) == 0){
             str->isLoop=TRUE;
             str->function=loopCommands[i].function;
-            arrNoArgTask[numCommands++]=str;
-            return TRUE;
-        }
-    }
-    return FALSE;
-}
-int execute(noArgTask * str, char * command){
-    for(int i=0 ; i < NUM_COMMANDS_NO_ARG; ++i){
-        if(strcmp(command,noArgumentCommands[i].name) == 0){
-            str->isLoop=FALSE;
-            str->function=noArgumentCommands[i].function;
-            arrNoArgTask[numCommands++]=str;
+            sysTask(str, NO_ARG_TASK);
             return TRUE;
         }
     }
     return FALSE;
 }
 
-int executeArgument(argTask * str, char * command, char * arg){
+int addNoArgFunc(noArgTask * str, char * command){
+    for(int i=0 ; i < NUM_COMMANDS_NO_ARG; ++i){
+        if(strcmp(command,noArgumentCommands[i].name) == 0){
+            str->isLoop=FALSE;
+            str->function=noArgumentCommands[i].function;
+            sysTask(str, NO_ARG_TASK);
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+int addArgFunc(argTask * str, char * command, char * arg){
     for(int i = 0 ; i < NUM_COMMANDS_ARG; ++i){
         if(strcmp(command,argumentCommands[i].name) == 0){
             str->function=argumentCommands[i].function;
             str->arg1=arg;
             str->isLoop=FALSE;
-            arrArgTask[numCommands++]=str;
+            sysTask(str, ARG_TASK);
             return TRUE;
         }
     }

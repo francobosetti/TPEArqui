@@ -12,7 +12,7 @@ int sysInfoReg(uint64_t * regs);
 int sysPrintMem(uint8_t * mem, uint64_t address);
 void sysSleep(uint64_t secs);
 void sysClearScreen();
-void sysOneTask(void * str, uint8_t flag);
-void sysTwoTasks(void * str1, uint8_t flag1, void * str2, uint8_t flag2);
+void sysTask(void * str, uint8_t flag);
+void sysRunTasks();
 
 #endif //SAMPLECODEMODULE_SYSCALLS_H

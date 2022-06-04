@@ -14,42 +14,41 @@ static  uint32_t currentRight=41*2;
 static  uint32_t leftHeight=0;
 static  uint32_t rightHeight=0;
 
+enum fds{STDOUT = 1, STDERR, STDDER, STDIZQ, STDBOTH, STDERRDER, STDERRIZQ, STDERRBOTH};
+
 
 void ncScroll(){
-    for (int i=0; i<width*(height-1)*2; i++){
+    for (int i=0; i<width*(height-1)*2; i++)
         video[i]=video[i + (width*2)];
-    }
-    for(int t=width*(height-1)*2; t<(width*height*2); t+=2){
-        video[t]=' ';
-    }
-    currentVideo-=width*2;
 
+    for(int t=width*(height-1)*2; t<(width*height*2); t+=2)
+        video[t]=' ';
+
+    currentVideo-=width*2;
 }
 
 
 void ncScrollLeft(){
     for(int i=0; i<height-1; i++){
-        for( int j=0; j<widthHalf*2+2; j++){
+        for( int j=0; j<widthHalf*2+2; j++)
             video[j+i*width*2]=video[j+(i+1)*width*2];
-        }
     }
 
-    for (int t = width*(height-1)*2; t < width*(height-1)*2+widthHalf*2;t+=2) {
+    for (int t = width*(height-1)*2; t < width*(height-1)*2+widthHalf*2;t+=2)
         video[t]=' ';
-    }
+
     leftHeight=24;
 
 }
 void ncScrollRight(){
     for(int i=0; i<height-1; i++){
-        for( int j=rightStart; j<width*2; j++){
+        for( int j=rightStart; j<width*2; j++)
             video[j+i*width*2]=video[j+(i+1)*width*2];
-        }
     }
 
-    for (int t = width*(height-1)*2+rightStart; t < width*height*2 ;t+=2) {
+    for (int t = width*(height-1)*2+rightStart; t < width*height*2 ;t+=2)
         video[t]=' ';
-    }
+
     rightHeight=24;
 
 }
@@ -60,8 +59,35 @@ void checkScroll(){
     }
 }
 
-void ncPrintfd(uint8_t fd, const char * string){
-
+void ncPrintFdAttribute(uint8_t fd, const char * string , int color, int backColor){
+    switch (fd){
+        case STDOUT:
+            ncPrintAttribute(string, color, backColor);
+            break;
+        case STDERR:
+            ncPrintAttribute(string, color, backColor);
+            break;
+        case STDBOTH:
+            ncPrintLeftAttribute(string,color,backColor);
+            ncPrintRightAttribute(string, color, backColor);
+            break;
+        case STDDER:
+            ncPrintRightAttribute(string, color, backColor);
+            break;
+        case STDIZQ:
+            ncPrintLeftAttribute(string,color,backColor);
+            break;
+        case STDERRBOTH:
+            ncPrintLeftAttribute(string,color,backColor);
+            ncPrintRightAttribute(string, color, backColor);
+            break;
+        case STDERRDER:
+            ncPrintRightAttribute(string, color, backColor);
+            break;
+        case STDERRIZQ:
+            ncPrintLeftAttribute(string, color, backColor);
+            break;
+    }
 }
 
 void ncPrint(const char * string)
@@ -95,15 +121,43 @@ void ncPrintCharAttribute(char character, int chColor, int backColor)
     *currentVideo = backColor<<4 | chColor;
     currentVideo++;
 }
-
+void ncPrintCharFdAttribute(uint8_t fd, char character, int color, int backColor){
+    switch (fd){
+        case STDOUT:
+            ncPrintCharAttribute(character, color, backColor);
+            break;
+        case STDERR:
+            ncPrintCharAttribute(character, color, backColor);
+            break;
+        case STDBOTH:
+            ncPrintCharLeftAttribute(character,color,backColor);
+            ncPrintCharRightAttribute(character, color, backColor);
+            break;
+        case STDDER:
+            ncPrintCharRightAttribute(character, color, backColor);
+            break;
+        case STDIZQ:
+            ncPrintCharLeftAttribute(character,color,backColor);
+            break;
+        case STDERRBOTH:
+            ncPrintCharLeftAttribute(character,color,backColor);
+            ncPrintCharRightAttribute(character, color, backColor);
+            break;
+        case STDERRDER:
+            ncPrintCharRightAttribute(character, color, backColor);
+            break;
+        case STDERRIZQ:
+            ncPrintCharLeftAttribute(character, color, backColor);
+            break;
+    }
+}
 void ncPrintChar(char character)
 {
     checkScroll();
 	*currentVideo = character;
 	currentVideo += 2;
 }
-void ncPrintLeftAttribute(const char * string, int chColor, int backColor)
-{
+void ncPrintLeftAttribute(const char * string, int chColor, int backColor){
     int i;
     for (i = 0; string[i] != 0; i++)
         ncPrintCharLeftAttribute(string[i], chColor, backColor);
@@ -114,6 +168,7 @@ void ncPrintCharLeftAttribute(char character, int chColor, int backColor){
         ncNewlineLeft();
         return;
     }
+
     if(currentLeft>widthHalf*2){
         currentLeft=0;
         leftHeight++;
@@ -121,6 +176,7 @@ void ncPrintCharLeftAttribute(char character, int chColor, int backColor){
             ncScrollLeft();
         }
     }
+
     video[leftHeight*width*2+currentLeft]=character;
     currentLeft++;
     video[leftHeight*width*2+currentLeft]= backColor<<4 | chColor;
@@ -155,6 +211,27 @@ void ncPrintCharBothAttribute(char character, int chColor, int backColor){
     ncPrintCharLeftAttribute(character, chColor, backColor);
     ncPrintCharRightAttribute(character, chColor, backColor);
 }
+void ncNewLineFd(uint8_t fd){
+    switch (fd){
+        case STDERR:
+        case STDOUT:
+            ncNewline();
+            break;
+        case STDERRBOTH:
+        case STDBOTH:
+            ncNewlineLeft();
+            ncNewlineRight();
+            break;
+        case STDERRDER:
+        case STDDER:
+            ncNewlineRight();
+            break;
+        case STDERRIZQ:
+        case STDIZQ:
+            ncNewlineLeft();
+            break;
+    }
+}
 
 void ncNewline()
 {
@@ -164,6 +241,7 @@ void ncNewline()
 	}
 	while((uint64_t)(currentVideo - video) % (width * 2) != 0);
 }
+
 void ncNewlineLeft(){
     do {
         ncPrintCharLeftAttribute(' ', White,Black);
@@ -183,48 +261,58 @@ void ncNewlineBoth(){
     ncNewlineRight();
 }
 
-
-void ncPrintDec(uint64_t value)
-{
+void ncPrintDec(uint64_t value){
 	ncPrintBase(value, 10);
 }
 
-void ncPrintHex(uint64_t value)
-{
+void ncPrintHex(uint64_t value){
+    ncPrint("0x");
 	ncPrintBase(value, 16);
 }
-void ncPrintHexLeft(uint64_t value)
-{
-    ncPrintBaseLeft(value, 16);
-}
-void ncPrintHexRight(uint64_t value)
-{
-    ncPrintBaseRight(value, 16);
+
+void ncPrintHexFdAttribute(uint8_t fd, uint64_t value, int color, int backColor){
+    ncPrintFdAttribute(fd,"0x", color, backColor);
+    ncPrintBaseFdAttribute(fd, value, 16, color, backColor);
 }
 
-void ncPrintBin(uint64_t value)
-{
+void ncPrintBin(uint64_t value){
 	ncPrintBase(value, 2);
 }
 
-void ncPrintBase(uint64_t value, uint32_t base)
-{
+void ncPrintBase(uint64_t value, uint32_t base){
     uintToBase(value, buffer, base);
     ncPrint(buffer);
 }
-void ncPrintBaseLeft(uint64_t value, uint32_t base)
-{
+
+void ncPrintBaseFdAttribute(uint8_t fd, uint64_t value, uint32_t base, int color, int backColor){
     uintToBase(value, buffer, base);
-    ncPrintLeft(buffer);
-}
-void ncPrintBaseRight(uint64_t value, uint32_t base)
-{
-    uintToBase(value, buffer, base);
-    ncPrintRight(buffer);
+    ncPrintFdAttribute(fd, buffer, color, backColor);
 }
 
-void ncClear()
-{
+void ncClearFd(uint8_t fd){
+    switch (fd){
+        case STDERR:
+        case STDOUT:
+            ncClear();
+            break;
+        case STDERRBOTH:
+        case STDBOTH:
+            ncClearLeft();
+            ncClearRight();
+            break;
+        case STDERRDER:
+        case STDDER:
+            ncClearRight();
+            break;
+        case STDERRIZQ:
+        case STDIZQ:
+            ncClearLeft();
+            break;
+
+    }
+}
+
+void ncClear(){
 	int i;
 	for (i = 0; i < height * width; i++)
 		video[i * 2] = ' ';
@@ -265,8 +353,7 @@ void ncDeleteChar(){
     }
 }
 
-static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base)
-{
+static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base){
 	char *p = buffer;
 	char *p1, *p2;
 	uint32_t digits = 0;
