@@ -4,7 +4,7 @@ GLOBAL sysTime
 GLOBAL sysClearScreen
 GLOBAL sysPrintMem
 GLOBAL sysInfoReg
-GLOBAL sysHasTicked
+GLOBAL sysSleep
 GLOBAL sysOneTask
 GLOBAL sysTwoTasks
 
@@ -14,7 +14,7 @@ section .data
     SYSCLEARSCREEN equ 69
     SYSPRINTMEM equ 70
     SYSINFOREG equ 71
-    SYSHASTICKED equ 72
+    SYSSLEEP equ 72
     SYSONETASK equ 73
     SYSTWOTASKS equ 74
     SYSTIME equ 201
@@ -95,10 +95,10 @@ sysClearScreen:
       pop rbp
       ret
 
-sysHasTicked:
+sysSleep:
     push rbp
     mov rbp, rsp
-    mov rax, SYSHASTICKED
+    mov rax, SYSSLEEP
 
     int 80h
     mov rsp, rbp

@@ -107,6 +107,7 @@ void vprintk(uint64_t fd, const char * fmt, va_list args){
         } else {
             switch (*fmt)
             {
+
                 case 'c':
                     putCharacter(fd,va_arg(args, int));
                     break;
@@ -121,7 +122,7 @@ void vprintk(uint64_t fd, const char * fmt, va_list args){
                 case 'x':
                 case 'p':
                     putCharacter(fd,'0');
-                    putCharacter(fd,'X');
+                    putCharacter(fd,'x');
                     printString(fd, itoa( va_arg(args, uint64_t) ,buffer, HEXABASE));
                     break;
                 default:

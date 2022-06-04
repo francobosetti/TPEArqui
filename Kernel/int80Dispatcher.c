@@ -4,19 +4,21 @@
 #include "lib.h"
 #include "time.h"
 #include "scheduler.h"
+#include "registers.h"
+#include "interrupts.h"
 
 #define SYS_READ 0
 #define SYS_WRITE 1
 #define SYS_CLEARSCREEN 69
 #define SYS_MEM 70
-//#define SYS_REGISTERS 71
-#define SYS_HASTICKED 72
+#define SYS_REGISTERS 71
+#define SYS_SLEEP 72
 #define SYS_ONETASK 73
 #define SYS_TWOTASKS 74
 #define SYS_TIME 201
 
 #define GPRSIZE 16
-
+#define CANTBYTES 32
 #define MAX_BUFF 512
 
 #define TRUE 1
@@ -133,41 +135,33 @@ void sys_time(clock * str){
     str->year = bcdToDec(getYear());
 }
 
-int sys_hasTicked(){
-    static unsigned long last_tick = 0;
-    unsigned long current_tick = ticks_elapsed();
-    if(last_tick == current_tick){
-        return 0;
+void sys_sleep(uint64_t secs){
+    uint64_t current_secs = seconds_elapsed();
+    uint64_t final_secs=current_secs+secs;
+    while(current_secs<final_secs){
+        current_secs=seconds_elapsed();
     }
-    last_tick = current_tick;
-    return 1;
 }
 
 void sys_clearscreen(){
     ncClear();
 }
 
-/*
-void sys_registers(uint64_t regs[]){
-    //array ordenado de la siguiente manera rax, rbx, rcx, rdx, rbp, rsi, rdi, rsp, r8,r9,r10,r11,r12,r13,r14,r15
-    uint64_t *ptr;
 
-    ptr = prepareRegisters();
-
-    for ( int i = 0 ; i < GPRSIZE ; i++){
-        //le cargue el valor de los registros
-        regs[i] = ptr[i];
-    }
-
+int sys_registers(uint64_t regs[]){
+    return getRegisters(regs);
 }
-*/
 
-void sys_mem(uint8_t * mem, uint64_t address){      
-    // cargo en el array mem 32 bytes a partir de address
-    for (int i = 0; i < 32; i++) {
-        mem[i] = getByte(address);
-        address+=8;
+int sys_mem(uint8_t * mem, uint64_t address){
+    if((uint64_t) address > (0x20000000 - 32)) {
+        return -1;
     }
+    // cargo en el array mem 32 bytes a partir de address
+    for (int i = 0; i < CANTBYTES; i++) {
+        mem[i] = getByte(address);
+        address++;
+    }
+    return 0;
 }
 
 void sys_oneTask(void * str, uint8_t flag){
@@ -182,6 +176,7 @@ void sys_twoTasks(void * str1, uint8_t flag1, void * str2, uint8_t flag2){
 }
 
 int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3) {
+    _sti();
     switch (code) {
         case SYS_READ: //arg0: fd , arg1: buff, arg2: length
             return sys_read( (uint8_t) arg0, (char *) arg1, (uint64_t) arg2);
@@ -193,24 +188,19 @@ int _int80Dispatcher(uint16_t code, uint64_t arg0, uint64_t arg1, uint64_t arg2,
         case SYS_CLEARSCREEN:
             sys_clearscreen();
             break;
-        case SYS_HASTICKED:
-            return sys_hasTicked();
+        case SYS_SLEEP:
+            sys_sleep((uint64_t) arg0);
             break;
         case SYS_MEM:  //arg0: uint8_t * mem, array de 32 lugares de 8bits, arg1: uint64_t address, direc para buscar
-            sys_mem((uint8_t *) arg0, (uint64_t) arg1); //todo revisar el tema de que si va en userLand o en KS
-            break;
+            return sys_mem((uint8_t *) arg0, (uint64_t) arg1);
         case SYS_ONETASK:
             sys_oneTask((void *) arg0, (uint8_t) arg1);
             break;
         case SYS_TWOTASKS:
             sys_twoTasks((void *) arg0, (uint8_t) arg1, (void *) arg2, (uint8_t) arg3);
             break;
-
-            /*
-        case SYS_REGISTERS: //arg0: registers * , struct donde va a guardar la info a devolver
-            sys_registers((registers *) arg0);
-            break;*/
-
+        case SYS_REGISTERS:
+            return sys_registers( (uint64_t *) arg0);
     }
     return 0;
 }

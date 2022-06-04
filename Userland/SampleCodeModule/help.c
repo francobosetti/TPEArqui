@@ -7,7 +7,7 @@ void help(uint8_t fd){
     "* help - Muestra las funciones disponibles para utilizar\n",
     "* divZero - Genera una excepcion de division por zero\n",
     "* invalidOpCode - Genera una excepción de Operation Code Invalido\n",
-    "* inforeg - Imprime en pantalla el valor de todos los registros\n",
+    "* inforeg - Imprime en pantalla el valor de todos los registros.\nDebera primero tocar la letra CTRL para sacar una snapshot de los registros\n",
     "* printmem - Recibe como argumento un puntero, realiza en memoria un\nvolcado de 32 bytes a partir de la direccion recibida como\nargumento y lo imprime en pantalla\n",
     "* time - Despliega en pantalla el dia y la hora del sistema\n",
     "* primos - Despliega en pantalla los numeros primos\n",

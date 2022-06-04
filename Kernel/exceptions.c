@@ -18,39 +18,45 @@ char* regNameArr[]={"RAX: ", "RBX: ", "RCX: ", "RDX: ", "RBP: ", "RSI: ", "RDI: 
 static Exception exceptions[]={&zeroDivision, 0, 0, 0, 0, 0, &invalidOpcode};
 
 void exceptionHandler(char * errMsg){
+    uint8_t cantTasks = getCantTasks();
     uint8_t taskRemoved = removeCurrentTask();
     uint64_t * regArr= prepareRegisters();
 
     char * message = "Ingrese ESC para reiniciar SHELL";
 
-    if(taskRemoved == 0){
-        ncPrintLeftAttribute(errMsg, Red, Black);
-        ncNewlineLeft();
-        for (int i = 0; i < 16; ++i) {
-            ncPrintLeft(regNameArr[i]);
-            ncPrintHexLeft(regArr[i]);
+    if(cantTasks>1){
+        if(taskRemoved == firstTask){
+            ncClearLeft();
+            ncPrintLeftAttribute(errMsg, Red, Black);
+            ncNewlineLeft();
+            for (int i = 0; i < 16; ++i) {
+                ncPrintLeftAttribute(regNameArr[i], Red, Black);
+                ncPrintHexLeft(regArr[i]);
+                ncNewlineLeft();
+            }
+            ncPrintLeftAttribute(message, Red, Black);
             ncNewlineLeft();
         }
-        ncPrintLeftAttribute(message, Red, Black);
-        ncNewlineLeft();
-    }
-    else if (taskRemoved == 1){
-        ncPrintRightAttribute(errMsg, Red, Black);
-        ncNewlineRight();
-        for (int i = 0; i < 16; ++i) {
-            ncPrintRight(regNameArr[i]);
-            ncPrintHexRight(regArr[i]);
+        else if (taskRemoved == secondTask){
+            ncClearRight();
+            ncPrintRightAttribute(errMsg, Red, Black);
             ncNewlineRight();
-        }
-        ncPrintRightAttribute(message, Red, Black);
-        ncNewlineRight();
+            for (int i = 0; i < 16; ++i) {
+                ncPrintRightAttribute(regNameArr[i], Red, Black);
+                ncPrintHexRight(regArr[i]);
+                ncNewlineRight();
+            }
+            ncPrintRightAttribute(message, Red, Black);
+            ncNewlineRight();
 
+        }
     }
     else {
+        ncClear();
         ncPrintAttribute(errMsg, Red, Black);
         ncNewline();
         for (int i = 0; i < 16; ++i) {
-            ncPrint(regNameArr[i]);
+            ncPrintAttribute(regNameArr[i], Red, Black);
             ncPrintHex(regArr[i]);
             ncNewline();
         }
@@ -59,6 +65,7 @@ void exceptionHandler(char * errMsg){
     }
 
     _sti();
+
     if(getCantTasks()!=0)
         runTasks();
     else{

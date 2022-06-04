@@ -8,7 +8,10 @@
 #define ENTER 28
 #define LSHIFT 0x2A
 #define RSHIFT 0x36
+
+#define CONTROL 29
 #define BACKSPACE 14
+
 
 void ncClear();
 void keyboard_handler();

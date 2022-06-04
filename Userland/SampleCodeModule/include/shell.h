@@ -15,6 +15,7 @@ typedef struct{
 #define ARG_TASK 2
 typedef struct{
     argPointer function;
+    uint8_t isLoop;
     char * arg1;
 }argTask;
 
@@ -24,6 +25,7 @@ void restartStates();
 int execute(noArgTask * str, char * command);
 int executeArgument(argTask * str, char * command, char * arg);
 int addFunction(noArgTask * str, char * command);
+
 
 
 

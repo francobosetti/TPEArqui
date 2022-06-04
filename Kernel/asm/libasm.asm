@@ -88,13 +88,13 @@ getKey:
     pop rbp
     ret
 
-; retorna (creo) el byte en la posicion edi, que es el unico argumento de la función
+
 getByte:
     push rbp
     mov rbp, rsp
 
     mov rax, 0      ; no se si hace falta
-    mov al, [edi]
+    mov al, [rdi]
 
     mov rsp, rbp
     pop rbp

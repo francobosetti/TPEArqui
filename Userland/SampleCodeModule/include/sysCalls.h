@@ -8,9 +8,9 @@
 int sysWrite(uint64_t fd,const char *c, uint64_t length);
 int sysRead(uint64_t fd,const char *c, uint64_t length);
 void sysTime(clock * cptr);
-void sysInfoReg();
-void sysPrintMem(uint64_t * mem, uint64_t address);
-void sysHasTicked();
+int sysInfoReg(uint64_t * regs);
+int sysPrintMem(uint8_t * mem, uint64_t address);
+void sysSleep(uint64_t secs);
 void sysClearScreen();
 void sysOneTask(void * str, uint8_t flag);
 void sysTwoTasks(void * str1, uint8_t flag1, void * str2, uint8_t flag2);

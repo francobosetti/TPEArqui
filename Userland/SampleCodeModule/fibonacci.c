@@ -1,10 +1,11 @@
 #include "fibonacci.h"
 #include "library.h"
+#include "sysCalls.h"
 
 #define FIBO0 0
 #define FIBO1 1
 
-static uint32_t current = 0;
+static uint32_t current = 2;
 static uint64_t t1 = FIBO0, t2 = FIBO1;
 
 static void printFirstFibos(uint8_t fd){
@@ -12,6 +13,7 @@ static void printFirstFibos(uint8_t fd){
 }
 
 void nextFibo(uint8_t fd){
+    sysSleep(1);
     if(t1 == FIBO0 && t2 == FIBO1)
         printFirstFibos(fd);
 
@@ -23,7 +25,7 @@ void nextFibo(uint8_t fd){
 }
 
 void restartFibo(){
-    current = 0;
+    current = 2;
     t1 = FIBO0;
     t2 = FIBO1;
 }

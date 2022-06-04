@@ -8,7 +8,7 @@ static uint8_t * currentVideo = (uint8_t*)0xB8000;
 static const uint32_t width = 80;
 static const uint32_t height = 25;
 static const uint32_t widthHalf=37;
-static const uint32_t rightStart=41*2;
+static const uint32_t rightStart=42*2;
 static  uint32_t currentLeft=0;
 static  uint32_t currentRight=41*2;
 static  uint32_t leftHeight=0;
@@ -28,8 +28,8 @@ void ncScroll(){
 
 
 void ncScrollLeft(){
-    for(int i=0; i<height; i++){
-        for( int j=0; j<=widthHalf; j++){
+    for(int i=0; i<height-1; i++){
+        for( int j=0; j<widthHalf*2+2; j++){
             video[j+i*width*2]=video[j+(i+1)*width*2];
         }
     }
@@ -41,8 +41,8 @@ void ncScrollLeft(){
 
 }
 void ncScrollRight(){
-    for(int i=0; i<height; i++){
-        for( int j=rightStart; j<=width*2; j++){
+    for(int i=0; i<height-1; i++){
+        for( int j=rightStart; j<width*2; j++){
             video[j+i*width*2]=video[j+(i+1)*width*2];
         }
     }
@@ -58,6 +58,10 @@ void checkScroll(){
     if((currentVideo-video) >= (width*2*height)){
         ncScroll();
     }
+}
+
+void ncPrintfd(uint8_t fd, const char * string){
+
 }
 
 void ncPrint(const char * string)
@@ -106,10 +110,14 @@ void ncPrintLeftAttribute(const char * string, int chColor, int backColor)
 }
 
 void ncPrintCharLeftAttribute(char character, int chColor, int backColor){
+    if(character=='\n'){
+        ncNewlineLeft();
+        return;
+    }
     if(currentLeft>widthHalf*2){
         currentLeft=0;
         leftHeight++;
-        if(leftHeight>25){
+        if(leftHeight>24){
             ncScrollLeft();
         }
     }
@@ -126,10 +134,14 @@ void ncPrintRightAttribute(const char * string, int chColor, int backColor){
 }
 
 void ncPrintCharRightAttribute(char character, int chColor, int backColor){
+    if(character=='\n'){
+        ncNewlineRight();
+        return;
+    }
     if(currentRight>(width-1)*2){
         currentRight=rightStart;
         rightHeight++;
-        if(rightHeight>25){
+        if(rightHeight>24){
             ncScrollRight();
         }
     }
@@ -225,10 +237,24 @@ void ncClear()
 }
 
 void ncClearRight(){
+    for(int i=0; i<height-1; i++){
+        for( int j=rightStart; j<width*2; j+=2){
+            video[j+i*width*2]=' ';
+        }
+    }
+    currentRight=rightStart;
+    rightHeight=0;
     return;
 }
 
 void ncClearLeft(){
+    for(int i=0; i<height-1; i++){
+        for( int j=0; j<widthHalf*2+2; j+=2){
+            video[j+i*width*2]=' ';
+        }
+    }
+    currentLeft=0;
+    leftHeight=0;
     return;
 }
 

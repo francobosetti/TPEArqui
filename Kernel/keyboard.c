@@ -2,6 +2,7 @@
 #include <naiveConsole.h>
 #include "keyboard.h"
 #include "int80Dispatcher.h"
+#include "registers.h"
 
 #define MAX_BUFF 512
 
@@ -13,7 +14,7 @@ static char kbd_US [CANT_KEYS] =
                 0,  27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
                 '\t', /* <-- Tab */
                 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
-                0, /* <-- control key */
+                13, /* <-- control key */
                 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`',  0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/',   0,
                 '*',
                 0,  /* Alt */
@@ -105,6 +106,9 @@ void keyboard_handler(){
         shiftFlag = 1;
     else if(teclahex == (RSHIFT + RELEASE) || teclahex == (LSHIFT + RELEASE)) //Ambos release shifts del teclado
         shiftFlag = 0;
+    else if(teclahex == CONTROL){
+        saveRegisters();
+    }
     else if ( teclahex < RELEASE) {
          if (shiftFlag == 0) {
             keyboardBuffer[writer++] = kbd_US[teclahex];
@@ -123,10 +127,7 @@ char * getBuffer(int * writerVal){
 
 char getCharKernel(){
     char c = 0;
-    uint16_t ret = 0;
-    do{
-        ret = sys_read(STDIN,&c,1);
-    } while (ret != 1);
+    sys_read(STDIN,&c,1);
     //TODO VER ESTA CONDICION DE CORTE, ME PARECE QUE ESTA MAL
     return c;
 }

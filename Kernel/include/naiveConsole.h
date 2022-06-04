@@ -44,6 +44,8 @@ void ncNewlineRight();
 void ncNewlineBoth();
 
 void ncClear();
+void ncClearLeft();
+void ncClearRight();
 void ncScroll();
 
 void ncDeleteChar();

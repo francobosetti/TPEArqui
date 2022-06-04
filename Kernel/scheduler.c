@@ -2,9 +2,7 @@
 #include "keyboard.h"
 #include "naiveConsole.h"
 #include "lib.h"
-
-#define STOP_FIRST 1
-#define STOP_SECOND 2
+#include "interrupts.h"
 
 #define NULL (void *) 0
 #define MAX_TASKS 2
@@ -20,6 +18,7 @@ typedef struct{
 typedef void (*argPointer)(char * arg, uint8_t fd);
 typedef struct{
     argPointer function;
+    uint8_t isLoop;
     char * arg1;
 }argTask;
 
@@ -31,6 +30,7 @@ static noArgTask * noArgTasks[MAX_TASKS] = {NULL, NULL};
 static argTask * argTasks[MAX_TASKS] = {NULL, NULL};
 static int fds[MAX_TASKS];
 
+static uint8_t running = FALSE, twoTaskFlag = FALSE;
 
 void setFds(){
     for (int i = 0, fd; i < MAX_TASKS; ++i) {
@@ -48,11 +48,11 @@ void setFds(){
 }
 
 int isDuplicatedNoArg(){
-    return cantTasks > 1 && (noArgTasks[cantTasks-1]->function == noArgTasks[cantTasks]->function);
+    return cantTasks > 1 && (noArgTasks[cantTasks-2]->function == noArgTasks[cantTasks-1]->function);
 }
 
 int isDuplicatedArg(){
-    return cantTasks > 1 && (argTasks[cantTasks-1]->function == argTasks[cantTasks]->function);
+    return cantTasks > 1 && (argTasks[cantTasks-2]->function == argTasks[cantTasks-1]->function);
 }
 
 void addTask(void * str, uint8_t flag){
@@ -61,22 +61,24 @@ void addTask(void * str, uint8_t flag){
 
    if(flag == NO_ARG_TASK){
        noArgTasks[cantTasks++] = (noArgTask *) str;
-       if(isDuplicatedNoArg())
-           duplicatedTask=TRUE;
+       duplicatedTask=isDuplicatedNoArg();
    }
    else if(flag == ARG_TASK){
        argTasks[cantTasks++] = (argTask *) str;
-       if(isDuplicatedArg())
-           duplicatedTask=TRUE;
+       duplicatedTask=isDuplicatedArg();
    }
 }
 
 void removeTask(uint8_t task){
     if(task<=0 || task > MAX_TASKS)
         return;
-    noArgTasks[task-1] = NULL;
-    argTasks[task-1] = NULL;
-    //setFds();
+    noArgTasks[task] = NULL;
+    argTasks[task] = NULL;
+    if(duplicatedTask){
+        duplicatedTask=FALSE;
+        setFds();
+    }
+    cantTasks--;
 }
 
 uint8_t removeCurrentTask(){
@@ -85,7 +87,6 @@ uint8_t removeCurrentTask(){
     noArgTasks[currentTask] = NULL;
     argTasks[currentTask] = NULL;
     cantTasks--;
-    //setFds();
 
     return currentTask;
 }
@@ -100,6 +101,8 @@ void runCurrentTask(){
         else if(argTasks[currentTask]!=NULL){
             char * arg1 = argTasks[currentTask]->arg1;
             argTasks[currentTask]->function(arg1,fds[currentTask]);
+            if(!argTasks[currentTask]->isLoop)
+                removeCurrentTask();
         }
     }
 }
@@ -111,6 +114,7 @@ void resetScheduler(){
     }
     cantTasks=currentTask=0;
     duplicatedTask=FALSE;
+    running = FALSE;
 }
 
 uint8_t getCantTasks(){
@@ -123,21 +127,31 @@ int checkNull(){
 }*/
 
 void runTasks(){
+    if(!running){
+        _sti();
+        setFds();
+        running=TRUE;
+        twoTaskFlag = (cantTasks == MAX_TASKS);
+    }
+
     char c = 0;
-    setFds();
-    while (cantTasks > 0/*&& (c = getCharKernel()) != EXIT_KEY*/){
+    do {
         if(c == STOP_FIRST)
-            removeTask(STOP_FIRST);
+            removeTask(firstTask);
         else if(c == STOP_SECOND)
-            removeTask(STOP_SECOND);
+            removeTask(secondTask);
 
         while(currentTask < MAX_TASKS){
             runCurrentTask();
             currentTask++;
         }
-
         currentTask = 0;
-    }
+    }while ((twoTaskFlag || cantTasks > 0) && (c = getCharKernel()) != EXIT_KEY);
+
+    if(twoTaskFlag)
+        ncClear();
+
+    ncNewline();
     resetScheduler();
     give_control_to_user();
 }

@@ -1,7 +1,7 @@
-#include <stdint.h>
-
 #ifndef _TIME_H_
 #define _TIME_H_
+
+#include <stdint.h>
 
 typedef struct clock{
     uint8_t seconds;
@@ -14,6 +14,6 @@ typedef struct clock{
 
 void timer_handler();
 int ticks_elapsed();
-int seconds_elapsed();
+uint64_t seconds_elapsed();
 
 #endif
