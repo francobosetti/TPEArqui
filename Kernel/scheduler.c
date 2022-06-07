@@ -31,6 +31,9 @@ static argTask * argTasks[MAX_TASKS] = {NULL, NULL};
 static int fds[MAX_TASKS];
 
 static uint8_t running = FALSE, twoTaskFlag = FALSE;
+static uint8_t stopAllFlag=0;
+static uint8_t stopFirstFlag=0;
+static uint8_t stopSecondFlag=0;
 
 void setFds(){
     for (int i = 0, fd; i < MAX_TASKS; ++i) {
@@ -75,18 +78,22 @@ void addTask(void * str, uint8_t flag){
 void removeTask(uint8_t task){
     if(task<0 || task > MAX_TASKS)
         return;
-    noArgTasks[task] = NULL;
-    argTasks[task] = NULL;
-    if(duplicatedTask){
-        duplicatedTask=FALSE;
-        setFds();
+
+    if(noArgTasks[task] != NULL || argTasks[task] != NULL){
+        noArgTasks[task] = NULL;
+        argTasks[task] = NULL;
+        if(duplicatedTask){
+            duplicatedTask=FALSE;
+            setFds();
+        }
+        cantTasks--;
     }
-    cantTasks--;
 }
 
 uint8_t removeCurrentTask(){
     if(cantTasks == 0)
         return -1;
+
     noArgTasks[currentTask] = NULL;
     argTasks[currentTask] = NULL;
     cantTasks--;
@@ -94,18 +101,33 @@ uint8_t removeCurrentTask(){
     return currentTask;
 }
 
+void removeAllTasks(){
+    for (int i = 0; i < MAX_TASKS; ++i) {
+        noArgTasks[i] = NULL;
+        argTasks[i] = NULL;
+    }
+    cantTasks=0;
+}
+
+static void checkNotLoop(){
+    if(duplicatedTask)
+        removeAllTasks();
+    else
+        removeCurrentTask();
+}
+
 void runCurrentTask(){
     if(cantTasks>0){
         if(noArgTasks[currentTask] != NULL){
             noArgTasks[currentTask]->function(fds[currentTask]);
             if(!noArgTasks[currentTask]->isLoop)
-                removeCurrentTask();
+                checkNotLoop();
         }
         else if(argTasks[currentTask]!=NULL){
             char * arg1 = argTasks[currentTask]->arg1;
             argTasks[currentTask]->function(arg1,fds[currentTask]);
             if(!argTasks[currentTask]->isLoop)
-                removeCurrentTask();
+                checkNotLoop();
         }
     }
 }
@@ -116,8 +138,10 @@ void resetScheduler(){
         argTasks[i] = NULL;
     }
     cantTasks=currentTask=0;
-    duplicatedTask=FALSE;
+    duplicatedTask = FALSE;
     running = FALSE;
+    stopAllFlag = stopFirstFlag = stopSecondFlag = FALSE;
+    cleanKeyboardBuffer();
 }
 
 uint8_t getCantTasks(){
@@ -126,6 +150,24 @@ uint8_t getCantTasks(){
 
 uint8_t getTwoTaskFlag(){
     return twoTaskFlag;
+}
+
+void setStopFlag(uint8_t flag){
+    switch (flag) {
+        case STOP_ALL:
+            stopAllFlag = TRUE;
+            break;
+        case STOP_FIRST:
+            stopFirstFlag = TRUE;
+            break;
+        case STOP_SECOND:
+            stopSecondFlag = TRUE;
+            break;
+    }
+}
+
+uint8_t getStopAllFlag(){
+    return stopAllFlag;
 }
 
 void runTasks(){
@@ -137,13 +179,16 @@ void runTasks(){
         twoTaskFlag = (cantTasks == MAX_TASKS);
     }
 
-    char c = 0;
     do {
         if(twoTaskFlag){
-            if(c == STOP_FIRST)
+            if(stopFirstFlag){
                 removeTask(firstTask);
-            else if(c == STOP_SECOND)
+                stopFirstFlag = FALSE;
+            }
+            if(stopSecondFlag){
                 removeTask(secondTask);
+                stopSecondFlag = FALSE;
+            }
         }
 
         while(currentTask < MAX_TASKS){
@@ -151,14 +196,14 @@ void runTasks(){
             currentTask++;
         }
         currentTask = 0;
-    }while ((twoTaskFlag || cantTasks > 0) && (c = getCharKernel()) != EXIT_KEY);
+    }while ((twoTaskFlag || cantTasks > 0) &&  !stopAllFlag);
 
     if(twoTaskFlag)
         ncClear();
 
     ncNewline();
     resetScheduler();
-    give_control_to_user();
+    restartSCM();
 }
 
 

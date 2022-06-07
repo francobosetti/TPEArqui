@@ -1,7 +1,6 @@
 #include "printMem.h"
 #include "library.h"
 #include "sysCalls.h"
-#include <stdint.h>
 
 #define BUFFSIZE 128
 
@@ -9,11 +8,8 @@
 #define NOERROR 1
 
 
-// recuperada de https://github.com/dart-lang/sdk/issues/2624 y adaptada para que funcione en C
-
-static uint64_t hexToNum(char * hex, int * error)
-{
-
+// Obtenido de https://github.com/dart-lang/sdk/issues/2624 y adaptada para que funcione en C
+static uint64_t hexToNum(char * hex, int * error){
     if ( hex == NULL || hex[0] != '0' || hex[1] != 'x' ){
         *error = ERROR;
         return 0;
@@ -28,21 +24,12 @@ static uint64_t hexToNum(char * hex, int * error)
     {
         int hexDigit = hex[i];
         if (hexDigit >= 48 && hexDigit <= 57)
-        {
             val += (hexDigit - 48) * (1 << (4 * (len - 1 - i)));
-        }
         else if (hexDigit >= 65 && hexDigit <= 70)
-        {
-            // A..F
-            val += (hexDigit - 55) * (1 << (4 * (len - 1 - i)));
-        }
+            val += (hexDigit - 55) * (1 << (4 * (len - 1 - i))); // A..F
         else if (hexDigit >= 97 && hexDigit <= 102)
-        {
-            // a..f
-            val += (hexDigit - 87) * (1 << (4 * (len - 1 - i)));
-        }
-        else
-        {
+            val += (hexDigit - 87) * (1 << (4 * (len - 1 - i))); // a..f
+        else{
             *error = ERROR;
             return 0;
         }

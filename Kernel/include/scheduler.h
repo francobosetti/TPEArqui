@@ -6,12 +6,8 @@
 #define TRUE 1
 #define FALSE !TRUE
 
-enum fds{STDIN=0, STDOUT, STDERR, STDDER, STDIZQ, STDBOTH, STDERRDER, STDERRIZQ, STDERRBOTH};
 enum tasks{firstTask = 0, secondTask};
-
-#define STOP_FIRST '1'
-#define STOP_SECOND '2'
-#define EXIT_KEY 27
+enum stopKeys{STOP_ALL = 27, STOP_FIRST='1', STOP_SECOND='2'};
 
 void addTask(void * str, uint8_t flag);
 void removeTask(uint8_t task);
@@ -21,5 +17,7 @@ void runTasks();
 void resetScheduler();
 uint8_t getTwoTaskFlag();
 uint8_t getCantTasks();
+void setStopFlag(uint8_t flag);
+uint8_t getStopAllFlag();
 
 #endif //SCHEDULER_H

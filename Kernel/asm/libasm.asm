@@ -11,7 +11,7 @@ GLOBAL getYear
 GLOBAL prepareRegisters
 GLOBAL getByte
 
-GLOBAL give_control_to_user
+GLOBAL restartSCM
 
 EXTERN getStackBase
 EXTERN runSampleCodeModule
@@ -112,7 +112,8 @@ prepareRegisters:
     mov [GPRv + 4 * 8], rbp
     mov [GPRv + 5 * 8], rsi
     mov [GPRv + 6 * 8], rdi
-    mov [GPRv + 7 * 8], rsp
+    mov rax, [rsp+8*18] ;RSP
+    mov [GPRv + 7 * 8], rax
     mov [GPRv + 8 * 8], r8
     mov [GPRv + 9 * 8], r9
     mov [GPRv + 10 * 8], r10
@@ -121,18 +122,20 @@ prepareRegisters:
     mov [GPRv + 13 * 8], r13
     mov [GPRv + 14 * 8], r14
     mov [GPRv + 15 * 8], r15
+    mov rax, [rsp+8*15] ;RIP
+    mov [GPRv + 16 * 8], rax
 
     mov rax, GPRv
     ret
 
-give_control_to_user:
+restartSCM:
     call getStackBase	        ; Get thet stack address
 	mov rsp, rax				; Set up the stack with the returned address
 	call runSampleCodeModule
 
 
 section .bss
-    GPRv resq 16
+    GPRv resq 17
 
 
 

@@ -1,13 +1,11 @@
 #include "primeNums.h"
 #include "library.h"
-#include <stdint.h>
 #include "sysCalls.h"
 
 static uint64_t current = 2;
 
 int isPrime(uint64_t number) {
-    for(uint64_t i=2;i<=number/2;i++)
-    {
+    for(uint64_t i=2;i<=number/2;i++){
         if(number%i==0)
             return FALSE;
     }
@@ -23,15 +21,8 @@ void nextPrime(uint8_t fd){
         sysSleep(1);
     }
     current++;
-    while (!isPrime(current)){
+    while (!isPrime(current))
         current++;
-    }
-}
-
-void primeNumbers(){
-    /* Find all Prime numbers between 1 to end */
-    while (1)
-        nextPrime(STDOUT);
 }
 
 void restartPrimes(){

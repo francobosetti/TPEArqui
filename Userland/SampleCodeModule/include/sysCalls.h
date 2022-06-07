@@ -2,7 +2,6 @@
 #define SAMPLECODEMODULE_SYSCALLS_H
 
 #include "clock.h"
-#include "shell.h"
 #include <stdint.h>
 
 int sysWrite(uint64_t fd,const char *c, uint64_t length);

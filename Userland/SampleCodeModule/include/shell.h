@@ -27,9 +27,5 @@ int addNoArgFunc(noArgTask * str, char * command);
 int addArgFunc(argTask * str, char * command, char * arg);
 int addLoopFunc(noArgTask * str, char * command);
 
-
-
-
-
 #endif //SAMPLECODEMODULE_SHELL_H
 

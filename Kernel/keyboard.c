@@ -1,8 +1,8 @@
-#include <lib.h>
-#include <naiveConsole.h>
+#include "lib.h"
+#include "naiveConsole.h"
 #include "keyboard.h"
 #include "int80Dispatcher.h"
-#include "registers.h"
+#include "scheduler.h"
 
 #define MAX_BUFF 512
 
@@ -99,22 +99,33 @@ void ncPrintKeyShift(uint16_t code){
     }
 }
 
+static uint8_t ctrlFlag=FALSE;
 static uint8_t shiftFlag = 0;
+
 void keyboard_handler(){
     uint16_t teclahex = getKey();
     if(teclahex == RSHIFT || teclahex == LSHIFT)
         shiftFlag = 1;
     else if(teclahex == (RSHIFT + RELEASE) || teclahex == (LSHIFT + RELEASE)) //Ambos release shifts del teclado
         shiftFlag = 0;
-    else if(teclahex == CONTROL){
-        saveRegisters();
-    }
-    else if ( teclahex < RELEASE) {
-         if (shiftFlag == 0) {
-            keyboardBuffer[writer++] = kbd_US[teclahex];
-        } else {
+    else if(teclahex == CONTROL)
+        ctrlFlag=TRUE;
+    else if(teclahex == (CONTROL+RELEASE))
+        ctrlFlag=FALSE;
+    else if(teclahex == ESCAPE)
+        setStopFlag(STOP_ALL);
+    else if (teclahex < RELEASE) {
+        if(kbd_US[teclahex] != 0) {
+            if (shiftFlag == 0)
+                keyboardBuffer[writer++] = kbd_US[teclahex];
+            else
                 keyboardBuffer[writer++] = shift_kbd_US[teclahex];
-            }
+
+            if(teclahex == ONE)
+                setStopFlag(STOP_FIRST);
+            else if(teclahex == TWO)
+                setStopFlag(STOP_SECOND);
+        }
     }
     writer %= MAX_BUFF;
 }
@@ -125,11 +136,13 @@ char * getBuffer(int * writerVal){
     return keyboardBuffer;
 }
 
-char getCharKernel(){
-    char c = 0;
-    sys_read(STDIN,&c,1);
-    //TODO VER ESTA CONDICION DE CORTE, ME PARECE QUE ESTA MAL
-    return c;
+void cleanKeyboardBuffer(){
+    char c;
+    while (sys_read(STDIN, &c, 1)!=-1);
+}
+
+int getCtrlFlag(){
+    return ctrlFlag;
 }
 
 

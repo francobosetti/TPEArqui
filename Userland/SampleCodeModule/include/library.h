@@ -11,18 +11,8 @@
 
 #define REGULAR 0
 #define ESCAPE 1
-#define STDIN 0
-#define STDOUT 1
-#define STDERR 2
-#define STDDER 3
-#define STDIZQ 4
 
-
-#define STDBOTH 5
-#define STDERRDER 6
-#define STDERRIZQ 7
-#define STDERRBOTH 8
-
+enum fds{STDIN=0, STDOUT, STDERR, STDDER, STDIZQ, STDBOTH, STDERRDER, STDERRIZQ, STDERRBOTH};
 #define DISTANCE_TO_ERRORFD 3
 
 #define BUFFSIZE 128

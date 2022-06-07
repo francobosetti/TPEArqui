@@ -16,7 +16,7 @@ uint8_t getDayOfMonth();
 uint8_t getMonth();
 uint8_t getYear();
 
-void give_control_to_user();
+void restartSCM();
 
 uint64_t * prepareRegisters();
 

@@ -3,4 +3,4 @@
 
 void help(uint8_t fd);
 
-#endif //SAMPLECODEMODULE__HELP
+#endif //SAMPLECODEMODULE_HELP_H

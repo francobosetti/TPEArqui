@@ -13,10 +13,10 @@ static void printFirstFibos(uint8_t fd){
 }
 
 void nextFibo(uint8_t fd){
-    sysSleep(1);
     if(t1 == FIBO0 && t2 == FIBO1)
         printFirstFibos(fd);
 
+    sysSleep(1);
     uint64_t nextTerm = t1 + t2;
     printkfd(fd, "Fibo(%d) = %d\n", current, nextTerm);
     t1 = t2;

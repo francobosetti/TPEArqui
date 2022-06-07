@@ -7,6 +7,12 @@
 #include "registers.h"
 #include "interrupts.h"
 
+#define CANTBYTES 32
+#define MAX_BUFF 512
+
+#define TRUE 1
+#define FALSE !TRUE
+
 enum sysCalls{  SYS_READ = 0,
                 SYS_WRITE = 1,
                 SYS_CLEARSCREEN = 69,
@@ -16,12 +22,6 @@ enum sysCalls{  SYS_READ = 0,
                 SYS_TASK = 73,
                 SYS_RUNTASKS = 74,
                 SYS_TIME = 201};
-
-#define CANTBYTES 32
-#define MAX_BUFF 512
-
-#define TRUE 1
-#define FALSE !TRUE
 
 #define NO_ARG_TASK 1
 typedef void (*noArgPointer)(uint8_t fd);
@@ -39,28 +39,25 @@ typedef struct{
 
 static uint16_t reader = 0;
 
-// Retrieved from https://stackoverflow.com/questions/28133020/how-to-convert-bcd-to-decimal
+// Codigo sacado de: https://stackoverflow.com/questions/28133020/how-to-convert-bcd-to-decimal
 static unsigned int bcdToDec(unsigned char time){
     return (time >> 4) * 10 + (time & 0x0F);
 }
 
-int sys_read(uint8_t fd, char * buff, uint64_t length){ //TODO: ARREGLAR CANTIDAD DE BYTES DEVUELTOS
-
+int sys_read(uint8_t fd, char * buff, uint64_t length){
     int writer;
     int i;
     char * kbdbuffer = getBuffer(&writer);
 
-    if (reader == writer)
+    if (reader == writer || fd != STDIN)
         return -1;
 
-    int addedNewLine = FALSE;
-    //corto cuando me paso la length o con newline
-    for ( i = 0; i < length && !addedNewLine; i++, reader = ( reader + 1) % MAX_BUFF ){
+    uint8_t addedNewLine = FALSE;
+    for (i = 0; i < length && !addedNewLine; i++, reader = ( reader + 1) % MAX_BUFF){
         buff[i] = kbdbuffer[reader];
-        if ( kbdbuffer[reader] == '\n')
+        if (kbdbuffer[reader] == '\n')
             addedNewLine = TRUE;
     }
-    //hasta aca anda bien
     return i;
 }
 
@@ -79,6 +76,8 @@ int sys_write(uint8_t fd, char * buff, uint64_t length){
             ncNewLineFd(fd);
         else if ( buff[i] == '\b')
             ncDeleteChar();
+        else if(buff[i]=='\t')
+            ncPrintFdAttribute(fd, "   ", color, Black);
         else
             ncPrintCharFdAttribute(fd, buff[i], color, Black);
     }

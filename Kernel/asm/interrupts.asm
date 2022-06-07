@@ -19,6 +19,8 @@ GLOBAL _int80Handler
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN _int80Dispatcher
+EXTERN getCtrlFlag
+EXTERN saveRegisters
 
 SECTION .text
 
@@ -75,7 +77,28 @@ SECTION .text
 %macro exceptionHandler 1
 	pushState
 
+	mov [GPRv], rax
+    mov [GPRv + 1 * 8], rbx
+    mov [GPRv + 2 * 8], rcx
+    mov [GPRv + 3 * 8], rdx
+    mov [GPRv + 4 * 8], rbp
+    mov [GPRv + 5 * 8], rsi
+    mov [GPRv + 6 * 8], rdi
+    mov rax, [rsp+8*18] ;RSP
+    mov [GPRv + 7 * 8], rax
+    mov [GPRv + 8 * 8], r8
+    mov [GPRv + 9 * 8], r9
+    mov [GPRv + 10 * 8], r10
+    mov [GPRv + 11 * 8], r11
+    mov [GPRv + 12 * 8], r12
+    mov [GPRv + 13 * 8], r13
+    mov [GPRv + 14 * 8], r14
+    mov [GPRv + 15 * 8], r15
+    mov rax, [rsp+8*15] ;RIP
+    mov [GPRv + 16 * 8], rax
+
 	mov rdi, %1 ; pasaje de parametro
+	mov rsi, GPRv
 	call exceptionDispatcher
 
 	popState
@@ -120,7 +143,46 @@ _irq00Handler:
 
 ;Keyboard
 _irq01Handler:
-	irqHandlerMaster 1
+    pushState
+
+    mov rdi, 1 ; pasaje de parametro
+    call irqDispatcher
+
+    call getCtrlFlag
+    cmp rax, 1
+    jne _end
+    popState
+    pushState
+
+    mov [GPRv], rax
+    mov [GPRv + 1 * 8], rbx
+    mov [GPRv + 2 * 8], rcx
+    mov [GPRv + 3 * 8], rdx
+    mov [GPRv + 4 * 8], rbp
+    mov [GPRv + 5 * 8], rsi
+    mov [GPRv + 6 * 8], rdi
+    mov rax, [rsp+8*18] ;RSP
+    mov [GPRv + 7 * 8], rax
+    mov [GPRv + 8 * 8], r8
+    mov [GPRv + 9 * 8], r9
+    mov [GPRv + 10 * 8], r10
+    mov [GPRv + 11 * 8], r11
+    mov [GPRv + 12 * 8], r12
+    mov [GPRv + 13 * 8], r13
+    mov [GPRv + 14 * 8], r14
+    mov [GPRv + 15 * 8], r15
+    mov rax, [rsp+8*15] ;RIP
+    mov [GPRv + 16 * 8], rax
+
+    mov rdi, GPRv
+    call saveRegisters
+_end:
+    ; signal pic EOI (End of Interrupt)
+    mov al, 20h
+    out 20h, al
+
+    popState
+    iretq
 
 ;Cascade pic never called
 _irq02Handler:
@@ -189,3 +251,4 @@ haltcpu:
 
 SECTION .bss
 	aux resq 1
+	GPRv resq 17

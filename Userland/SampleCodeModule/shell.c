@@ -46,23 +46,24 @@ enum inputCases{SINGLE_FUNCTION = 1, SINGLE_FUNC_W_ARG, PIPE_NO_ARGS, PIPE_ONE_A
 #define CANT_ERR_MESSAGES 3
 char * errMessages[CANT_ERR_MESSAGES] = {" : comando no encontrado\n",
                                         "Combinacion de argumentos no valida\n",
-                                        " : comando no encontrado/ Combinacion invalida de argumentos\n"};
+                                        " : comando no encontrado / Combinacion invalida de argumentos\n"};
 
 
+
+#define IS_SPACE_OR_TAB(c) ((c) == ' ' || (c) == '\t')
 // funcion para parsear el string, cada fila de la matriz es un string
-//devuelve cantidad de palabras (incluyendo el pipe) que encontro
-int parseString(char m[][MAX_LEN_COMMAND], const char * src) {
+// devuelve cantidad de palabras (incluyendo el pipe) que encontro
+int parseString(char m[][MAX_LEN_COMMAND], const char * src){
     int dim = 0;
     int j = 0;
     int i = 0;
 
     //salteo los primeros  espacios
-    while ( src[i] == ' ')
+    while (IS_SPACE_OR_TAB(src[i]))
         i++;
 
-    while ( src[i] != 0)
-    {
-        if ( src[i] != ' '){
+    while (src[i] != 0){
+        if (!IS_SPACE_OR_TAB(src[i])){
             m[dim][j++] = src[i];
             //si estoy terminando el string!
             if ( src[i + 1] == 0){
@@ -73,7 +74,7 @@ int parseString(char m[][MAX_LEN_COMMAND], const char * src) {
         } else {
             //completo String anterior
             m[dim][j] = 0;
-            while ( src[i] == ' ')
+            while (IS_SPACE_OR_TAB(src[i]))
                 i++;
             //aumento dimension de la matriz
             dim++;
@@ -119,9 +120,8 @@ void stopForCommand(){
 
     switch (stringsDim) {
         case SINGLE_FUNCTION:
-            if(!addLoopFunc(&noArgTask1,strings[0]) && !addNoArgFunc(&noArgTask1,strings[0])){
+            if(!addLoopFunc(&noArgTask1,strings[0]) && !addNoArgFunc(&noArgTask1,strings[0]))
                 errArguments(strings[0], errMessages[0], &errFlag);
-            }
             break;
         case SINGLE_FUNC_W_ARG:
             if(!addArgFunc(&argTask1,strings[0],strings[1])){
@@ -131,13 +131,12 @@ void stopForCommand(){
         case PIPE_NO_ARGS:
             if(strcmp(strings[1],PIPE) == 0){
                 pipeFlag=TRUE;
-                if(!addLoopFunc(&noArgTask1,strings[0]) && !addNoArgFunc(&noArgTask1,strings[0])){
+                if(!addLoopFunc(&noArgTask1,strings[0]) && !addNoArgFunc(&noArgTask1,strings[0]))
                     errArguments(strings[0], errMessages[0], &errFlag);
-                }
-                if(!addLoopFunc(&noArgTask2,strings[2]) && !addNoArgFunc(&noArgTask2,strings[2])){
+                if(!addLoopFunc(&noArgTask2,strings[2]) && !addNoArgFunc(&noArgTask2,strings[2]))
                     errArguments(strings[2], errMessages[0], &errFlag);
-                }
-            } else{
+            }
+            else{
                 printErr(errMessages[1]);
                 errFlag=TRUE;
             }
@@ -145,21 +144,17 @@ void stopForCommand(){
         case PIPE_ONE_ARG:
             if(strcmp(strings[1],PIPE) == 0){
                 pipeFlag=TRUE;
-                if(!addLoopFunc(&noArgTask1,strings[0]) && !addNoArgFunc(&noArgTask1,strings[0])){
+                if(!addLoopFunc(&noArgTask1,strings[0]) && !addNoArgFunc(&noArgTask1,strings[0]))
                     errArguments(strings[0], errMessages[0], &errFlag);
-                }
-                if(!addArgFunc(&argTask2,strings[2],strings[3])){
+                if(!addArgFunc(&argTask2,strings[2],strings[3]))
                     errArguments(strings[2], errMessages[2], &errFlag);
-                }
             }
             else if(strcmp(strings[2],PIPE) == 0){
                 pipeFlag=TRUE;
-                if(!addArgFunc(&argTask1,strings[0],strings[1])){
+                if(!addArgFunc(&argTask1,strings[0],strings[1]))
                     errArguments(strings[0], errMessages[2], &errFlag);
-                }
-                if(!addLoopFunc(&noArgTask2,strings[3]) && !addNoArgFunc(&noArgTask2,strings[3])){
+                if(!addLoopFunc(&noArgTask2,strings[3]) && !addNoArgFunc(&noArgTask2,strings[3]))
                     errArguments(strings[3], errMessages[0], &errFlag);
-                }
             }
             else{
                 printErr(errMessages[1]);
@@ -169,13 +164,12 @@ void stopForCommand(){
         case PIPE_TWO_ARGS:
             if(strcmp(strings[2],PIPE) == 0){
                 pipeFlag=TRUE;
-                if(!addArgFunc(&argTask1,strings[0],strings[1])){
+                if(!addArgFunc(&argTask1,strings[0],strings[1]))
                     errArguments(strings[0], errMessages[2], &errFlag);
-                }
-                if(!addArgFunc(&argTask2,strings[3],strings[4])){
+                if(!addArgFunc(&argTask2,strings[3],strings[4]))
                     errArguments(strings[3], errMessages[2], &errFlag);
-                }
-            } else{
+            }
+            else{
                 printErr(errMessages[1]);
                 errFlag=TRUE;
             }

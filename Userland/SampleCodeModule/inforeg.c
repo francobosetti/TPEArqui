@@ -2,7 +2,23 @@
 #include "sysCalls.h"
 #include "library.h"
 
-static char* regNameArr[]={"RAX: ", "RBX: ", "RCX: ", "RDX: ", "RBP: ", "RSI: ", "RDI: ", "RSP: ", "R8:  ","R9:  ","R10: ","R11: ","R12: ","R13: ","R14: ","R15: "};
+char* regNameArr[]={"RAX: ",
+                    "RBX: ",
+                    "RCX: ",
+                    "RDX: ",
+                    "RBP: ",
+                    "RSI: ",
+                    "RDI: ",
+                    "RSP: ",
+                    "R8:  ",
+                    "R9:  ",
+                    "R10: ",
+                    "R11: ",
+                    "R12: ",
+                    "R13: ",
+                    "R14: ",
+                    "R15: ",
+                    "RIP: "};
 
 void infoReg(uint8_t fd){
     uint64_t buff[CANT_REGS];
@@ -13,7 +29,7 @@ void infoReg(uint8_t fd){
         }
     }
     else{
-        if(fd  == STDOUT)
+        if(fd == STDOUT)
             fd = STDERR;
         else
             fd += DISTANCE_TO_ERRORFD;

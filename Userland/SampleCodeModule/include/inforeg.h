@@ -2,7 +2,7 @@
 #define SAMPLECODEMODULE_INFOREG_H
 
 #include <stdint.h>
-#define CANT_REGS 16
+#define CANT_REGS 17
 
 void infoReg(uint8_t fd);
 

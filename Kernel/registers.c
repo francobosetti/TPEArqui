@@ -1,12 +1,11 @@
 #include "registers.h"
 #include "scheduler.h"
-#include "lib.h"
 
 static uint8_t saved=FALSE;
 static uint64_t * regArr;
 
-void saveRegisters(){
-    regArr = prepareRegisters();
+void saveRegisters(uint64_t * regs){
+    regArr=regs;
     saved=TRUE;
 }
 

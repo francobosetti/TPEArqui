@@ -113,7 +113,7 @@ int main()
     ncNewline();
     ncPrint("Press ENTER to enter SHELL");
 
-    while (getKey() != ENTER);
+    while (getKey() != ENTER); //Se consume hasta el \n
 
     ncClear();
     ((EntryPoint)sampleCodeModuleAddress)();

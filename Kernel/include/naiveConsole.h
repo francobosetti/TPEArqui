@@ -23,15 +23,16 @@ enum colorAttributes{Black = 0,
     White = 15,
     };
 
-void ncPrintFdAttribute(uint8_t fd, const char * string , int color, int backColor);
+enum fds{STDIN=0, STDOUT, STDERR, STDDER, STDIZQ, STDBOTH, STDERRDER, STDERRIZQ, STDERRBOTH};
+
 void ncPrint(const char * string);
 void ncPrintRight(const char * string);
 void ncPrintLeft(const char * string);
-
-
 void ncPrintAttribute(const char * string, int color, int backColor);
 void ncPrintLeftAttribute(const char * string, int chColor, int backColor);
 void ncPrintRightAttribute(const char * string, int chColor, int backColor);
+void ncPrintBothAttribute(const char * string, int chColor, int backColor);
+void ncPrintFdAttribute(uint8_t fd, const char * string , int color, int backColor);
 
 void ncPrintChar(char character);
 void ncPrintCharAttribute(char character, int chColor, int backColor);
