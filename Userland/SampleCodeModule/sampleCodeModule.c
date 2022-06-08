@@ -9,7 +9,7 @@ static int firstEntry = TRUE;
 
 int main() {
     if(firstEntry){
-        printk("Lettuce OS shell\n\n");
+        printk("OMG USER HI!! Welcome to the LettuceOS Shell!\n\n");
         help(STDOUT);
     }
 
